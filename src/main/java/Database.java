@@ -5,12 +5,12 @@ import java.sql.*;
 /**
  * Created by glebu on 01-Feb-17.
  */
-public class Database {
-    String url = new String();
-    String username = new String();
-    String password = new String();
-    Connection connection = null;
-    public Database(String url, String username, String password){
+class Database {
+    private String url;
+    private String username;
+    private String password;
+    private Connection connection;
+    Database(String url, String username, String password){
         this.url = url;
         this.username = username;
         this.password = password;
@@ -29,12 +29,12 @@ public class Database {
         }
     }
 
-    public void executeQuery(String query) throws Exception {
+    void executeQuery(String query) throws Exception {
         PreparedStatement statement = connection.prepareStatement(query);
         statement.executeUpdate();
     }
 
-    public void insertValues(String username, String tweet) throws Exception {
+    void insertValues(String username, String tweet) throws Exception {
         PreparedStatement statement = connection.prepareStatement("INSERT INTO tweets (username, tweet) VALUES (?, ?)");
         statement.setString(1, username);
         statement.setString(2, tweet);
