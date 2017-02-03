@@ -29,18 +29,6 @@ class Database {
         }
     }
 
-    void executeQuery(String query) throws Exception {
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.executeUpdate();
-    }
-
-    void insertValues(String username, String tweet) throws SQLException {
-        PreparedStatement statement = connection.prepareStatement("INSERT INTO tweets (username, tweet) VALUES (?, ?)");
-        statement.setString(1, username);
-        statement.setString(2, tweet);
-        statement.executeUpdate();
-    }
-
     void writeTweet(Status status, String keyword){
         PreparedStatement statement;
         try {
@@ -70,7 +58,7 @@ class Database {
 
     void writeRetweet(Status status, String keyword) {
         try {
-            PreparedStatement statement = connection.prepareStatement("UPDATE tweets_" + keyword.toLowerCase() + " SET retweets = retweets + 1 WHERE tweetID = " + status.getRetweetedStatus().getId());
+            PreparedStatement statement = connection.prepareStatement("UPDATE tweets_" + keyword.toLowerCase() + " SET retweets = " + Long.toString(status.getRetweetedStatus().getRetweetCount()) + " WHERE tweetID = " + status.getRetweetedStatus().getId());
             statement.executeUpdate();
         } catch (SQLException e) {
             System.out.println("\n--------------------------------------\nRetweet exception: "+ e.getMessage() + "\n");
