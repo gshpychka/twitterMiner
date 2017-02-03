@@ -31,11 +31,13 @@ class TwitterStreamReceiver {
         twitterStream.filter(filterQuery);
     }
 
-    void processTweet(Status status){
-        if(status.isRetweet())
-            databaseWriter.writeRetweetMultithreaded(status.getRetweetedStatus(), keyword);
-        else
+    void processTweet(Status status, int i){
+        if(status.isRetweet()) {
+            databaseWriter.writeRetweet(status.getRetweetedStatus(), keyword);
+        } else {
             databaseWriter.writeTweet(status, keyword);
+            System.out.println(i + ": @" + status.getUser().getScreenName() + ": "+ status.getText() +", Posted at: " + status.getCreatedAt().getTime());
+        }
     }
 
 

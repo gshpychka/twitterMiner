@@ -13,8 +13,7 @@ class MyStatusListener implements StatusListener {
     }
     public void onStatus(Status status) {
         if(status.getQuotedStatus() == null) {
-            System.out.println(i + ": @" + status.getUser().getScreenName() + ": "+ status.getText() +", Posted at: " + status.getCreatedAt().getTime());
-            twitterStreamReceiver.processTweet(status);
+            twitterStreamReceiver.processTweet(status, i);
             i++;
         }
     }
