@@ -14,14 +14,9 @@ public class Main {
                 "67847124-DYAO5f29ePZhXWJqgpsaRNzA4LmUYHTKHXbMHEu5d",
                 "bjzvAB3i5glPJrkmw6CAH6sPeQuHSpiTp3E7Qbf88yNRE");
 
-        Database mysql = new Database("jdbc:mysql://localhost:3306/twitter?character_set_server=utf8mb4&character_set_connection=utf8mb4&characterEncoding=utf-8&character_set_results=utf8mb4", "gshpychka", "gVwx1K77");
+        DatabaseWriter databaseWriter = new DatabaseWriter();
+        TwitterStreamReceiver twitterWriterTrump = new TwitterStreamReceiver(token, databaseWriter, "Trump");
 
-
-        TwitterStreamWriter twitterWriterTrump = new TwitterStreamWriter(token, mysql);
-        TwitterStreamWriter twitterWriterBannon = new TwitterStreamWriter(token, mysql);
-
-        twitterWriterTrump.trackKeyword("Trump");
-        //twitterWriterBannon.trackKeyword("Bannon");
 
     }
 }
