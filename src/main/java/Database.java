@@ -1,4 +1,5 @@
 import com.vdurmont.emoji.EmojiParser;
+import twitter4j.Status;
 
 import java.sql.*;
 
@@ -34,11 +35,47 @@ class Database {
         statement.executeUpdate();
     }
 
-    void insertValues(String username, String tweet) throws Exception {
+    void insertValues(String username, String tweet) throws SQLException {
         PreparedStatement statement = connection.prepareStatement("INSERT INTO tweets (username, tweet) VALUES (?, ?)");
         statement.setString(1, username);
         statement.setString(2, tweet);
         statement.executeUpdate();
+    }
+
+    void writeTweet(Status status, String keyword){
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement("INSERT INTO users (userID, handle, name, followers) VALUES (?, ?, ?, ?)");
+            statement.setString(1, Long.toString(status.getUser().getId()));
+            statement.setString(2, EmojiParser.removeAllEmojis(status.getUser().getScreenName()));
+            statement.setString(3, EmojiParser.removeAllEmojis(status.getUser().getName()));
+            statement.setString(4, Long.toString(status.getUser().getFollowersCount()));
+            statement.executeUpdate();
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println("\nThis user is already in the database\n");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            statement = connection.prepareStatement("INSERT INTO tweets_" + keyword.toLowerCase() + " (userID, tweetID, tweetText, unixTimestamp) VALUES (?, ?, ?, ?)");
+            statement.setString(1, Long.toString(status.getUser().getId()));
+            statement.setString(2, Long.toString(status.getId()));
+            statement.setString(3, EmojiParser.removeAllEmojis(status.getText()));
+            statement.setString(4, Long.toString(status.getCreatedAt().getTime()));
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    void writeRetweet(Status status, String keyword) {
+        try {
+            PreparedStatement statement = connection.prepareStatement("UPDATE tweets_" + keyword.toLowerCase() + " SET retweets = retweets + 1 WHERE tweetID = " + status.getRetweetedStatus().getId());
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("\n--------------------------------------\nRetweet exception: "+ e.getMessage() + "\n");
+        }
     }
 
 

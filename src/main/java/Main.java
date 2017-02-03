@@ -16,12 +16,14 @@ public class Main {
                 "67847124-DYAO5f29ePZhXWJqgpsaRNzA4LmUYHTKHXbMHEu5d",
                 "bjzvAB3i5glPJrkmw6CAH6sPeQuHSpiTp3E7Qbf88yNRE");
 
-        Database mysql = new Database("jdbc:mysql://localhost:3306/default?useUnicode=yes&characterEncoding=utf-8", "gshpychka", "gVwx1K77");
+        Database mysql = new Database("jdbc:mysql://localhost:3306/twitter?character_set_server=utf8mb4&character_set_connection=utf8mb4&characterEncoding=utf-8&character_set_results=utf8mb4", "gshpychka", "gVwx1K77");
 
-        String[] keywords = {"Trump", "Bannon"};
 
-        TwitterStreamWriter twitterWriter = new TwitterStreamWriter(token, mysql);
+        TwitterStreamWriter twitterWriterTrump = new TwitterStreamWriter(token, mysql);
+        TwitterStreamWriter twitterWriterBannon = new TwitterStreamWriter(token, mysql);
 
-        twitterWriter.trackKeywords(keywords);
+        twitterWriterTrump.trackKeyword("Trump");
+        //twitterWriterBannon.trackKeyword("Bannon");
+
     }
 }
