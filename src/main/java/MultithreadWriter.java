@@ -8,10 +8,10 @@ import java.util.concurrent.Executors;
  * Created by glebu on 03-Feb-17.
  */
 class MultithreadWriter {
-    private String keyword;
+    private int globalCounter = 0;
     private DatabaseWriter databaseWriter;
 
-    private ExecutorService executorService = Executors.newFixedThreadPool(5);
+    private ExecutorService executorService = Executors.newFixedThreadPool(3);
 
     MultithreadWriter(DatabaseWriter databaseWriter) {
         this.databaseWriter = databaseWriter;
@@ -31,12 +31,13 @@ class MultithreadWriter {
                 try {
                     statement.execute();
                 } catch (SQLIntegrityConstraintViolationException e) {
-                    System.out.println("\nDuplicate entry");
-                    //System.out.println("Statement was: " + statement.toString() + "\n");
+                    System.out.println("\nUser already exists. Count : " + ++DatabaseWriter.USER_EXISTS_COUNT);
                 } catch (SQLException e) {
                     e.printStackTrace();
                 } finally {
-                    try { statement.close(); } catch (SQLException e) {}
+                    try {
+                        statement.close();
+                    } catch (SQLException e) {}
                 }
             }
         };
@@ -48,12 +49,16 @@ class MultithreadWriter {
             public void run(){
                 try {
                     statement.executeBatch();
-                } catch (SQLIntegrityConstraintViolationException e) {
-                    System.out.println("\nDuplicate entry in Batch task\n");
+                    DatabaseWriter.BATCH_COUNT++;
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    //System.out.println("========================On writing:===================================\n"+ e.getMessage());
                 } finally {
-                    try { statement.close();} catch (SQLException e) {}
+                    try {
+                        statement.close();
+                        System.out.println("Statement closed. Counter: " + globalCounter++);
+                    } catch (SQLException e) {
+                        System.out.println("==========================On closing:===================================\n"+ e.getMessage());
+                    }
                 }
             }
         };

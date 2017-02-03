@@ -32,11 +32,11 @@ class TwitterStreamReceiver {
     }
 
     void processTweet(Status status, int i){
+        //System.out.println(i /*+ ": @" + status.getUser().getScreenName() + ": "+ status.getText() +", Posted at: " + status.getCreatedAt().getTime()*/);
         if(status.isRetweet()) {
             databaseWriter.writeRetweet(status.getRetweetedStatus(), keyword);
         } else {
             databaseWriter.writeTweet(status, keyword);
-            System.out.println(i + ": @" + status.getUser().getScreenName() + ": "+ status.getText() +", Posted at: " + status.getCreatedAt().getTime());
         }
     }
 

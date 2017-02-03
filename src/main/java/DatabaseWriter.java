@@ -12,8 +12,10 @@ class DatabaseWriter {
     private String password = "gVwx1K77";
     private Connection connection;
     private MultithreadWriter multithreadWriter;
-
-
+    private int batchSizeTweets = 0;
+    private int batchSizeRetweets = 0;
+    static int BATCH_COUNT = 0;
+    static int USER_EXISTS_COUNT = 0;
     DatabaseWriter(){
         this.connection = getConnection();
         this.multithreadWriter = new MultithreadWriter(this);
@@ -38,7 +40,7 @@ class DatabaseWriter {
             statement.setString(4, Long.toString(status.getUser().getFollowersCount()));
             multithreadWriter.executeStatement(statement);
         } catch (SQLException e) {
-            System.out.println("\nError while writing tweet into users\n");
+            System.out.println("\nError while creating query for inserting into users\n");
         }
         try {
             statement = connection.prepareStatement("INSERT INTO tweets_" + keyword.toLowerCase() + " (userID, tweetID, tweetText, unixTimestamp) VALUES (?, ?, ?, ?)");
@@ -46,14 +48,21 @@ class DatabaseWriter {
             statement.setString(2, Long.toString(status.getId()));
             statement.setString(3, status.getText());
             statement.setString(4, Long.toString(status.getCreatedAt().getTime()));
-            multithreadWriter.executeStatement(statement);
+            statement.addBatch();
+            batchSizeTweets++;
+            if(batchSizeTweets >= 50) {
+                multithreadWriter.executeBatchStatement(statement);
+                System.out.println("Batch of "+ batchSizeTweets  + " tweets pushed " + BATCH_COUNT + " batches done");
+                batchSizeTweets = 0;
+            }
+
         } catch (SQLException e) {
             System.out.println("\n=====================================================\nError while writing tweet into tweets\n");
         }
 
     }
 
-    private int batchSize = 0;
+
     void writeRetweet(Status status, String keyword) {
         PreparedStatement statement;
         try {
@@ -61,10 +70,11 @@ class DatabaseWriter {
             statement.setLong(1, status.getRetweetCount());
             statement.setLong(2, status.getId());
             statement.addBatch();
-            batchSize++;
-            if(batchSize >= 50) {
+            batchSizeRetweets++;
+            if(batchSizeRetweets >= 50) {
                 multithreadWriter.executeBatchStatement(statement);
-                batchSize = 0;
+                System.out.println("Batch of "+ batchSizeRetweets  + " retweets pushed. " + BATCH_COUNT + " batches done");
+                batchSizeRetweets = 0;
             }
         } catch (SQLException e) {
             System.out.println("\n--------------------=============------------------\nRetweet exception: "+ e.getMessage());
