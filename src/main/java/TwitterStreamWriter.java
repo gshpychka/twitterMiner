@@ -1,9 +1,5 @@
-import com.vdurmont.emoji.EmojiParser;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
-
-import java.sql.SQLException;
-
 /**
  * Created by glebu on 02-Feb-17.
  */

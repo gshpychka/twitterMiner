@@ -1,7 +1,5 @@
-import com.vdurmont.emoji.EmojiParser;
-import twitter4j.*;
 
-import java.util.Date;
+import twitter4j.*;
 
 /**
  * Created by glebu on 02-Feb-17.
@@ -16,12 +14,11 @@ class MyStatusListener implements StatusListener {
 
 
     MyStatusListener(TwitterStreamWriter writer) {
-       // this.mysql = mysql;
         this.writer = writer;
     }
     public void onStatus(Status status) {
-        this.username = EmojiParser.removeAllEmojis(status.getUser().getName());
-        this.tweet = EmojiParser.removeAllEmojis(status.getText());
+        this.username = status.getUser().getName();
+        this.tweet = status.getText();
         long time = status.getCreatedAt().getTime();
         if(status.getQuotedStatus() == null) {
 

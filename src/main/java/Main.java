@@ -1,7 +1,5 @@
-import com.vdurmont.emoji.EmojiParser;
-import twitter4j.*;
-import twitter4j.conf.ConfigurationBuilder;
 
+import twitter4j.*;
 import java.io.IOException;
 
 /**

@@ -1,6 +1,5 @@
-import com.vdurmont.emoji.EmojiParser;
-import twitter4j.Status;
 
+import twitter4j.Status;
 import java.sql.*;
 
 /**
@@ -47,8 +46,8 @@ class Database {
         try {
             statement = connection.prepareStatement("INSERT INTO users (userID, handle, name, followers) VALUES (?, ?, ?, ?)");
             statement.setString(1, Long.toString(status.getUser().getId()));
-            statement.setString(2, EmojiParser.removeAllEmojis(status.getUser().getScreenName()));
-            statement.setString(3, EmojiParser.removeAllEmojis(status.getUser().getName()));
+            statement.setString(2, status.getUser().getScreenName());
+            statement.setString(3, status.getUser().getName());
             statement.setString(4, Long.toString(status.getUser().getFollowersCount()));
             statement.executeUpdate();
         } catch (SQLIntegrityConstraintViolationException e) {
@@ -60,7 +59,7 @@ class Database {
             statement = connection.prepareStatement("INSERT INTO tweets_" + keyword.toLowerCase() + " (userID, tweetID, tweetText, unixTimestamp) VALUES (?, ?, ?, ?)");
             statement.setString(1, Long.toString(status.getUser().getId()));
             statement.setString(2, Long.toString(status.getId()));
-            statement.setString(3, EmojiParser.removeAllEmojis(status.getText()));
+            statement.setString(3, status.getText());
             statement.setString(4, Long.toString(status.getCreatedAt().getTime()));
             statement.executeUpdate();
         } catch (SQLException e) {
