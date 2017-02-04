@@ -8,9 +8,7 @@ import java.util.concurrent.Executors;
  * Created by glebu on 03-Feb-17.
  */
 class MultithreadWriter {
-    private int globalCounter = 0;
     private DatabaseWriter databaseWriter;
-
     private ExecutorService executorService = Executors.newFixedThreadPool(3);
 
     MultithreadWriter(DatabaseWriter databaseWriter) {
@@ -29,9 +27,10 @@ class MultithreadWriter {
         Runnable task = new Runnable() {
             public void run(){
                 try {
-                    statement.execute();
+                    statement.executeUpdate();
                 } catch (SQLIntegrityConstraintViolationException e) {
-                    System.out.println("\nUser already exists. Count : " + ++DatabaseWriter.USER_EXISTS_COUNT);
+                    //System.out.println("\nUser already exists. Count : " + ++DatabaseWriter.USER_EXISTS_COUNT);
+                    //DatabaseWriter.USER_EXISTS_COUNT++;
                 } catch (SQLException e) {
                     e.printStackTrace();
                 } finally {
@@ -49,13 +48,13 @@ class MultithreadWriter {
             public void run(){
                 try {
                     statement.executeBatch();
-                    DatabaseWriter.BATCH_COUNT++;
+                    //DatabaseWriter.BATCH_COUNT++;
                 } catch (SQLException e) {
                     //System.out.println("========================On writing:===================================\n"+ e.getMessage());
                 } finally {
                     try {
                         statement.close();
-                        System.out.println("Statement closed. Counter: " + globalCounter++);
+                        //System.out.println("Statement closed. Counter: " + DatabaseWriter.CONNECTION_CLOSED_COUNT++ + " Total counter: " + DatabaseWriter.TOTAL_COUNT + " Same user count: " + DatabaseWriter.USER_EXISTS_COUNT);
                     } catch (SQLException e) {
                         System.out.println("==========================On closing:===================================\n"+ e.getMessage());
                     }

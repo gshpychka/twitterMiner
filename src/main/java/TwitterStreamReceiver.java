@@ -32,6 +32,7 @@ class TwitterStreamReceiver {
     }
 
     void processTweet(Status status, int i){
+        //DatabaseWriter.TOTAL_COUNT++;
         //System.out.println(i /*+ ": @" + status.getUser().getScreenName() + ": "+ status.getText() +", Posted at: " + status.getCreatedAt().getTime()*/);
         if(status.isRetweet()) {
             databaseWriter.writeRetweet(status.getRetweetedStatus(), keyword);

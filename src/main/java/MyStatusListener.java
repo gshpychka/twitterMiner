@@ -14,7 +14,7 @@ class MyStatusListener implements StatusListener {
     public void onStatus(Status status) {
         if(status.getQuotedStatus() == null) {
             twitterStreamReceiver.processTweet(status, i);
-            i++;
+            System.out.println(++i);
         }
     }
     public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {}

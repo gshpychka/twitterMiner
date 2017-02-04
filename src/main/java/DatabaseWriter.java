@@ -10,15 +10,25 @@ class DatabaseWriter {
     private String url = "jdbc:mysql://localhost:3306/twitter?character_set_server=utf8mb4&character_set_connection=utf8mb4&characterEncoding=utf-8&character_set_results=utf8mb4";
     private String username = "gshpychka";
     private String password = "gVwx1K77";
+    private String  keyword = "";
     private Connection connection;
     private MultithreadWriter multithreadWriter;
+    PreparedStatement statementRetweets;
     private int batchSizeTweets = 0;
     private int batchSizeRetweets = 0;
-    static int BATCH_COUNT = 0;
-    static int USER_EXISTS_COUNT = 0;
+//    static int BATCH_COUNT = 1;
+//    static int USER_EXISTS_COUNT = 1;
+//    static int TOTAL_COUNT = 0;
+//    static int CONNECTION_CLOSED_COUNT = 1;
     DatabaseWriter(){
         this.connection = getConnection();
         this.multithreadWriter = new MultithreadWriter(this);
+        this.keyword = "";
+        try {
+            this.statementRetweets = connection.prepareStatement("UPDATE tweets_" + keyword.toLowerCase() + " SET retweets = ? WHERE tweetID = ?");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private Connection getConnection() {
@@ -31,9 +41,9 @@ class DatabaseWriter {
     }
 
     void writeTweet(Status status, String keyword){
-        PreparedStatement statement;
+        this.keyword = keyword;
         try {
-            statement = connection.prepareStatement("INSERT INTO users (userID, handle, name, followers) VALUES (?, ?, ?, ?)");
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO users (userID, handle, name, followers) VALUES (?, ?, ?, ?)");
             statement.setString(1, Long.toString(status.getUser().getId()));
             statement.setString(2, status.getUser().getScreenName());
             statement.setString(3, status.getUser().getName());
@@ -43,37 +53,39 @@ class DatabaseWriter {
             System.out.println("\nError while creating query for inserting into users\n");
         }
         try {
-            statement = connection.prepareStatement("INSERT INTO tweets_" + keyword.toLowerCase() + " (userID, tweetID, tweetText, unixTimestamp) VALUES (?, ?, ?, ?)");
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO tweets_" + keyword.toLowerCase() + " (userID, tweetID, tweetText, unixTimestamp) VALUES (?, ?, ?, ?)");
             statement.setString(1, Long.toString(status.getUser().getId()));
             statement.setString(2, Long.toString(status.getId()));
             statement.setString(3, status.getText());
             statement.setString(4, Long.toString(status.getCreatedAt().getTime()));
-            statement.addBatch();
-            batchSizeTweets++;
-            if(batchSizeTweets >= 50) {
-                multithreadWriter.executeBatchStatement(statement);
-                System.out.println("Batch of "+ batchSizeTweets  + " tweets pushed " + BATCH_COUNT + " batches done");
-                batchSizeTweets = 0;
-            }
+            //statement.addBatch();
+            multithreadWriter.executeStatement(statement);
+//            batchSizeTweets++;
+//            if(batchSizeTweets >= 50) {
+//                multithreadWriter.executeBatchStatement(statement);
+//                statement = null;
+//                //System.out.println("Batch of "+ batchSizeTweets  + " tweets pushed " + BATCH_COUNT + " batches done");
+//                batchSizeTweets = 0;
+//            }
 
         } catch (SQLException e) {
             System.out.println("\n=====================================================\nError while writing tweet into tweets\n");
         }
 
     }
-
-
     void writeRetweet(Status status, String keyword) {
+        this.keyword = keyword;
         PreparedStatement statement;
         try {
-            statement = connection.prepareStatement("UPDATE tweets_" + keyword.toLowerCase() + " SET retweets = ? WHERE tweetID = ?");
+            statement = this.statementRetweets;
             statement.setLong(1, status.getRetweetCount());
             statement.setLong(2, status.getId());
             statement.addBatch();
+            multithreadWriter.executeStatement(statement);
             batchSizeRetweets++;
             if(batchSizeRetweets >= 50) {
                 multithreadWriter.executeBatchStatement(statement);
-                System.out.println("Batch of "+ batchSizeRetweets  + " retweets pushed. " + BATCH_COUNT + " batches done");
+                //System.out.println("Batch of "+ batchSizeRetweets  + " retweets pushed. " + BATCH_COUNT + " batches done");
                 batchSizeRetweets = 0;
             }
         } catch (SQLException e) {
