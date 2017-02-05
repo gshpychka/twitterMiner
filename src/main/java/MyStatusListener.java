@@ -7,14 +7,20 @@ import twitter4j.*;
 class MyStatusListener implements StatusListener {
 
     private int i =0;
+    int gc = 0;
     private TwitterStreamReceiver twitterStreamReceiver;
     MyStatusListener(TwitterStreamReceiver twitterStreamReceiver) {
         this.twitterStreamReceiver = twitterStreamReceiver;
     }
     public void onStatus(Status status) {
         if(status.getQuotedStatus() == null) {
-            twitterStreamReceiver.processTweet(status, i);
+            twitterStreamReceiver.processTweet(status);
             System.out.println(++i);
+            gc++;
+        }
+        if (gc > 5000) {
+            System.gc();
+            gc=0;
         }
     }
     public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {}
