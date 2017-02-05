@@ -52,9 +52,10 @@ class DatabaseWriter {
     void writeRetweet(Status status, String keyword) {
         PreparedStatement statement;
         try {
-            statement = connection.prepareStatement("UPDATE tweets_" + keyword.toLowerCase() + " SET retweets = ? WHERE tweetID = ?");
+            statement = connection.prepareStatement("UPDATE tweets_" + keyword.toLowerCase() + " SET retweets = ?, favorites = ? WHERE tweetID = ?");
             statement.setLong(1, status.getRetweetCount());
-            statement.setLong(2, status.getId());
+            statement.setLong(2, status.getFavoriteCount());
+            statement.setLong(3, status.getId());
             multithreadWriter.executeStatement(statement);
         } catch (SQLException e) {
             System.out.println("\n--------------------=============------------------\nRetweet exception: "+ e.getMessage());
