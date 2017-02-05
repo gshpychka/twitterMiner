@@ -35,8 +35,10 @@ class TwitterStreamReceiver {
         //System.out.println(i /*+ ": @" + status.getUser().getScreenName() + ": "+ status.getText() +", Posted at: " + status.getCreatedAt().getTime()*/);
         if(status.isRetweet()) {
            databaseWriter.writeRetweet(status.getRetweetedStatus(), keyword);
+           MyStatusListener.RETWEET_CCOUNT++;
         } else {
             databaseWriter.writeTweet(status, keyword);
+            MyStatusListener.TWEET_COUNT++;
         }
     }
 
