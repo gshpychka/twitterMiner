@@ -5,30 +5,26 @@ import java.sql.*;
 /**
  * Created by glebu on 01-Feb-17.
  */
-class Database {
-    private String url;
-    private String username;
-    private String password;
+class DatabaseWriter {
+    private String url = "jdbc:mysql://localhost:3306/twitter?character_set_server=utf8mb4&character_set_connection=utf8mb4&characterEncoding=utf-8&character_set_results=utf8mb4";
+    private String username = "gshpychka";
+    private String password = "gVwx1K77";
     private Connection connection;
-    Database(String url, String username, String password){
-        this.url = url;
-        this.username = username;
-        this.password = password;
-        this.connection = getConnection();
+    private MultithreadWriter multithreadWriter;
 
+    DatabaseWriter(){
+        this.connection = getConnection();
+        this.multithreadWriter = new MultithreadWriter();
     }
 
     private Connection getConnection() {
         System.out.println("Connecting database...");
-
         try {
             return DriverManager.getConnection(url, username, password);
-            //System.out.println("Database connected!");
         } catch (SQLException e) {
             throw new IllegalStateException("Cannot connect the database!", e);
         }
     }
-
     void writeTweet(Status status, String keyword){
         PreparedStatement statement;
         try {
@@ -37,11 +33,9 @@ class Database {
             statement.setString(2, status.getUser().getScreenName());
             statement.setString(3, status.getUser().getName());
             statement.setString(4, Long.toString(status.getUser().getFollowersCount()));
-            statement.executeUpdate();
-        } catch (SQLIntegrityConstraintViolationException e) {
-            System.out.println("\nThis user is already in the database\n");
+            multithreadWriter.executeStatement(statement);
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("\nError while creating query for inserting into users\n");
         }
         try {
             statement = connection.prepareStatement("INSERT INTO tweets_" + keyword.toLowerCase() + " (userID, tweetID, tweetText, unixTimestamp) VALUES (?, ?, ?, ?)");
@@ -49,22 +43,21 @@ class Database {
             statement.setString(2, Long.toString(status.getId()));
             statement.setString(3, status.getText());
             statement.setString(4, Long.toString(status.getCreatedAt().getTime()));
-            statement.executeUpdate();
+            multithreadWriter.executeStatement(statement);
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("\n=====================================================\nError while writing tweet into tweets\n");
         }
 
     }
-
     void writeRetweet(Status status, String keyword) {
+        PreparedStatement statement;
         try {
-            PreparedStatement statement = connection.prepareStatement("UPDATE tweets_" + keyword.toLowerCase() + " SET retweets = " + Long.toString(status.getRetweetedStatus().getRetweetCount()) + " WHERE tweetID = " + status.getRetweetedStatus().getId());
-            statement.executeUpdate();
+            statement = connection.prepareStatement("UPDATE tweets_" + keyword.toLowerCase() + " SET retweets = ? WHERE tweetID = ?");
+            statement.setLong(1, status.getRetweetCount());
+            statement.setLong(2, status.getId());
+            multithreadWriter.executeStatement(statement);
         } catch (SQLException e) {
-            System.out.println("\n--------------------------------------\nRetweet exception: "+ e.getMessage() + "\n");
+            System.out.println("\n--------------------=============------------------\nRetweet exception: "+ e.getMessage());
         }
     }
-
-
-
 }
