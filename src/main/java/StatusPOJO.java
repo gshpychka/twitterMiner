@@ -11,6 +11,7 @@ class StatusPOJO{
     private int favorites;
     private long timestamp;
     private String text;
+    private boolean isRetweet;
 
     StatusPOJO(Status status) {
         this.tweetID = status.getId();
@@ -19,6 +20,6 @@ class StatusPOJO{
         this.favorites = status.getFavoriteCount();
         this.timestamp = status.getCreatedAt().getTime();
         this.text = status.getText();
-
+        this.isRetweet = status.isRetweet();
     }
 }
