@@ -21,31 +21,4 @@ class StatusPOJO{
         this.text = status.getText();
 
     }
-
-    public long getTweetID() {
-        return tweetID;
-    }
-
-    public long getUserID() {
-        return userID;
-    }
-
-    public int getRetweets() {
-        return retweets;
-    }
-
-    public int getFavorites() {
-        return favorites;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-
-
 }
