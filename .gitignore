@@ -112,3 +112,4 @@ fabric.properties
 src/main/resources/
 src/test/
 /.idea/
+/src/main/java/TwitterApiToken.java
