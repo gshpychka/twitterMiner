@@ -1,6 +1,8 @@
 
 import twitter4j.*;
 
+import java.io.IOException;
+
 /**
  * Created by glebu on 02-Feb-17.
  */

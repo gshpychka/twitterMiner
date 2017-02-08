@@ -9,10 +9,7 @@ import java.io.IOException;
 public class Main {
     public static void main (String[] args) throws TwitterException, IOException {
 
-        TwitterApiToken token = new TwitterApiToken("m6AVdSoBYmxnSFqDj0e6DnKg5",
-                "0QETuaG1fqpIET7mR5QA8TPP95dvS7dp2rWOFthkFzI5gPsRhl",
-                "67847124-DYAO5f29ePZhXWJqgpsaRNzA4LmUYHTKHXbMHEu5d",
-                "bjzvAB3i5glPJrkmw6CAH6sPeQuHSpiTp3E7Qbf88yNRE");
+        TwitterApiToken token = new TwitterApiToken();
 
         DatabaseWriter databaseWriter = new DatabaseWriter();
         TwitterStreamReceiver twitterWriterTrump = new TwitterStreamReceiver(token, databaseWriter, "Trump");
