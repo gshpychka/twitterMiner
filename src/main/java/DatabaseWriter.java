@@ -1,64 +1,54 @@
 
-import twitter4j.Status;
-import java.sql.*;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.exception.ConstraintViolationException;
+import javax.persistence.PersistenceException;
+import java.util.logging.Level;
 
 /**
  * Created by glebu on 01-Feb-17.
  */
 class DatabaseWriter {
-    private String url = "jdbc:mysql://localhost:3306/twitter?character_set_server=utf8mb4&character_set_connection=utf8mb4&characterEncoding=utf-8&character_set_results=utf8mb4";
-    private String username = "gshpychka";
-    private String password = "gVwx1K77";
-    private Connection connection;
-    private MultithreadWriter multithreadWriter;
-
+    private SessionFactory sessionFactory;
+    private Transaction transaction;
     DatabaseWriter(){
-        this.connection = getConnection();
-        this.multithreadWriter = new MultithreadWriter();
+        java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
+        this.sessionFactory = new Configuration().configure( ).buildSessionFactory();
     }
 
-    private Connection getConnection() {
-        System.out.println("Connecting database...");
+    void writeTweetHibernate(StatusPOJO status){
+        Session session = sessionFactory.openSession();
+        transaction = session.beginTransaction();
+        session.save(status);
+        session.save(new UserPOJO(status.getUser()));
         try {
-            return DriverManager.getConnection(url, username, password);
-        } catch (SQLException e) {
-            throw new IllegalStateException("Cannot connect the database!", e);
-        }
-    }
-    void writeTweet(Status status, String keyword){
-        PreparedStatement statement;
-        try {
-            statement = connection.prepareStatement("INSERT INTO users (userID, handle, name, followers) VALUES (?, ?, ?, ?)");
-            statement.setString(1, Long.toString(status.getUser().getId()));
-            statement.setString(2, status.getUser().getScreenName());
-            statement.setString(3, status.getUser().getName());
-            statement.setString(4, Long.toString(status.getUser().getFollowersCount()));
-            multithreadWriter.executeStatement(statement);
-        } catch (SQLException e) {
-            System.out.println("\nError while creating query for inserting into users\n");
-        }
-        try {
-            statement = connection.prepareStatement("INSERT INTO tweets_" + keyword.toLowerCase() + " (userID, tweetID, tweetText, unixTimestamp) VALUES (?, ?, ?, ?)");
-            statement.setString(1, Long.toString(status.getUser().getId()));
-            statement.setString(2, Long.toString(status.getId()));
-            statement.setString(3, status.getText());
-            statement.setString(4, Long.toString(status.getCreatedAt().getTime()));
-            multithreadWriter.executeStatement(statement);
-        } catch (SQLException e) {
-            System.out.println("\n=====================================================\nError while writing tweet into tweets\n");
-        }
+            transaction.commit();
+        } catch (PersistenceException e) {
 
-    }
-    void writeRetweet(Status status, String keyword) {
-        PreparedStatement statement;
+        }
         try {
-            statement = connection.prepareStatement("UPDATE tweets_" + keyword.toLowerCase() + " SET retweets = ?, favorites = ? WHERE tweetID = ?");
-            statement.setLong(1, status.getRetweetCount());
-            statement.setLong(2, status.getFavoriteCount());
-            statement.setLong(3, status.getId());
-            multithreadWriter.executeStatement(statement);
-        } catch (SQLException e) {
-            System.out.println("\n--------------------=============------------------\nRetweet exception: "+ e.getMessage());
+            if(session.isDirty()) session.flush();
+        } catch (ConstraintViolationException e) {
+        }
+        session.close();
+    }
+
+    void writeRetweetHibernate(StatusPOJO status){
+        Session session = sessionFactory.openSession();
+        transaction = session.beginTransaction();
+        transaction.commit();
+        StatusPOJO statusOLD=session.get(StatusPOJO.class, status.getTweetID());
+        session.close();
+        if (statusOLD == null) {
+            writeTweetHibernate(status);
+        } else {
+            session = sessionFactory.openSession();
+            transaction = session.beginTransaction();
+            session.update(status);
+            transaction.commit();
+            session.close();
         }
     }
 }

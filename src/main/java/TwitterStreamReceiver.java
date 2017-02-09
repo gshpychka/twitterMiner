@@ -32,12 +32,11 @@ class TwitterStreamReceiver {
     }
 
     void processTweet(Status status){
-        //System.out.println(i /*+ ": @" + status.getUser().getScreenName() + ": "+ status.getText() +", Posted at: " + status.getCreatedAt().getTime()*/);
         if(status.isRetweet()) {
-           databaseWriter.writeRetweet(status.getRetweetedStatus(), keyword);
+           databaseWriter.writeRetweetHibernate(new StatusPOJO(status.getRetweetedStatus()));
            MyStatusListener.RETWEET_CCOUNT++;
         } else {
-            databaseWriter.writeTweet(status, keyword);
+            databaseWriter.writeTweetHibernate(new StatusPOJO(status));
             MyStatusListener.TWEET_COUNT++;
         }
     }

@@ -12,7 +12,7 @@ public class Main {
         TwitterApiToken token = new TwitterApiToken();
 
         DatabaseWriter databaseWriter = new DatabaseWriter();
-        TwitterStreamReceiver twitterWriterTrump = new TwitterStreamReceiver(token, databaseWriter, "Trump");
+        TwitterStreamReceiver twitterWriterTrump = new TwitterStreamReceiver(token, databaseWriter,"Trump");
 
 
     }
