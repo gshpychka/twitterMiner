@@ -10,7 +10,6 @@ class MyStatusListener implements StatusListener {
     private int RETWEET_CCOUNT;
     private int TWEET_COUNT;
     private int i =0;
-    private int gc = 0;
     private TwitterStreamReceiver twitterStreamReceiver;
     private String keyword;
 
@@ -22,11 +21,6 @@ class MyStatusListener implements StatusListener {
         if(status.getQuotedStatus() == null) {
             twitterStreamReceiver.processTweet(status);
             System.out.println(++i + " total. Original tweets: " + TWEET_COUNT + " ("+ (TWEET_COUNT * 100 )/i +"%). Retweet count: " + RETWEET_CCOUNT + " (" + (RETWEET_CCOUNT * 100)/i + "%). Keyword: " + keyword);
-            gc++;
-        }
-        if (gc > 5000) {
-            System.gc();
-            gc=0;
         }
     }
     public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {}
