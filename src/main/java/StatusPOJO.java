@@ -6,8 +6,8 @@ import twitter4j.User;
  */
 class StatusPOJO{
 
-    private long tweetid;
-    private long userid;
+    private long tweetID;
+    private long userID;
     private int retweets;
     private int favorites;
     private long timestamp;
@@ -27,12 +27,12 @@ class StatusPOJO{
         return user;
     }
 
-    public void setTweetID(long tweetid) {
-        this.tweetid = tweetid;
+    public void setTweetID(long tweetID) {
+        this.tweetID = tweetID;
     }
 
-    public void setUserID(long userid) {
-        this.userid = userid;
+    public void setUserID(long userID) {
+        this.userID = userID;
     }
 
     public void setRetweets(int retweets) {
@@ -53,8 +53,8 @@ class StatusPOJO{
 
     public StatusPOJO(){}
     StatusPOJO(Status status, String keyword) {
-        this.tweetid = status.getId();
-        this.userid = status.getUser().getId();
+        this.tweetID = status.getId();
+        this.userID = status.getUser().getId();
         this.retweets = status.getRetweetCount();
         this.favorites = status.getFavoriteCount();
         this.timestamp = status.getCreatedAt().getTime();
@@ -64,11 +64,11 @@ class StatusPOJO{
     }
 
     public long getTweetID() {
-        return tweetid;
+        return tweetID;
     }
 
     public long getUserID() {
-        return userid;
+        return userID;
     }
 
     public int getRetweets() {

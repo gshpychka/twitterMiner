@@ -6,7 +6,8 @@ import twitter4j.User;
 class UserPOJO {
     private String handle;
     private String name;
-    private long userid;
+    private long userID;
+    private int followers;
 
     public void setHandle(String handle) {
         this.handle = handle;
@@ -17,14 +18,12 @@ class UserPOJO {
     }
 
     public void setUserID(long userid) {
-        this.userid = userid;
+        this.userID = userid;
     }
 
     public void setFollowers(int followers) {
         this.followers = followers;
     }
-
-    private int followers;
 
     public String getHandle() {
         return handle;
@@ -35,7 +34,7 @@ class UserPOJO {
     }
 
     public long getUserID() {
-        return userid;
+        return userID;
     }
 
     public int getFollowers() {
@@ -45,7 +44,7 @@ class UserPOJO {
     UserPOJO(User user) {
         this.handle = user.getName();
         this.name = user.getScreenName();
-        this.userid = user.getId();
+        this.userID = user.getId();
         this.followers = user.getFollowersCount();
 
     }
