@@ -13,6 +13,11 @@ class StatusPOJO{
     private long timestamp;
     private String text;
     private User user;
+    private String keyword;
+
+    public String getKeyword() {
+        return keyword;
+    }
 
     public User getUser() {
         return user;
@@ -43,7 +48,7 @@ class StatusPOJO{
     }
 
     public StatusPOJO(){}
-    StatusPOJO(Status status) {
+    StatusPOJO(Status status, String keyword) {
         this.tweetID = status.getId();
         this.userID = status.getUser().getId();
         this.retweets = status.getRetweetCount();
@@ -51,6 +56,7 @@ class StatusPOJO{
         this.timestamp = status.getCreatedAt().getTime();
         this.text = status.getText();
         this.user = status.getUser();
+        this.keyword = keyword;
     }
 
     public long getTweetID() {

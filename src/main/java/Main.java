@@ -10,7 +10,6 @@ public class Main {
     public static void main (String[] args) throws TwitterException, IOException {
 
         TwitterApiToken token = new TwitterApiToken();
-
         DatabaseWriter databaseWriter = new DatabaseWriter();
         TwitterStreamReceiver twitterWriterTrump = new TwitterStreamReceiver(token, databaseWriter,"Trump");
 
