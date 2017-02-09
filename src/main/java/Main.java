@@ -1,6 +1,7 @@
 
 import twitter4j.*;
 import java.io.IOException;
+import java.util.logging.Level;
 
 /**
  * Created by glebu on 01-Feb-17.
@@ -8,11 +9,10 @@ import java.io.IOException;
  */
 public class Main {
     public static void main (String[] args) throws TwitterException, IOException {
-
+        java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
         TwitterApiToken token = new TwitterApiToken();
-        DatabaseWriter databaseWriter = new DatabaseWriter();
-        TwitterStreamReceiver twitterWriterTrump = new TwitterStreamReceiver(token, databaseWriter,"Trump");
-        TwitterStreamReceiver twitterWriterBannon = new TwitterStreamReceiver(token, databaseWriter, "Bannon");
-
+        new TwitterStreamReceiver(token, new DatabaseWriter(),"Trump");
+        new TwitterStreamReceiver(token, new DatabaseWriter(), "Bannon");
+        //new Thread(new KeywordAnalyzer("impeach")).start();
     }
 }

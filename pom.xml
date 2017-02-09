@@ -6,7 +6,7 @@
 
     <groupId>com.gshpychka</groupId>
     <artifactId>twitterMiner</artifactId>
-    <version>0.1</version>
+    <version>1.0</version>
     <build>
         <plugins>
             <plugin>
@@ -45,10 +45,11 @@
         </dependency>
 
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>[6.0,)</version>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.1-901-1.jdbc4</version>
         </dependency>
+
 
         <dependency>
             <groupId>org.hibernate</groupId>

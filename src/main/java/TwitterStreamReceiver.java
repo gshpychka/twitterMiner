@@ -1,7 +1,7 @@
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 /**
- * Created by glebu on 02-Feb-17.
+ *  Receives and processes the twitter stream
  */
 class TwitterStreamReceiver {
     private String keyword = "";
@@ -39,7 +39,6 @@ class TwitterStreamReceiver {
             listener.setTWEET_COUNT(listener.getTWEET_COUNT() + 1);
         }
         databaseWriter.writeTweet(new StatusPOJO(status, keyword));
-
     }
 
 

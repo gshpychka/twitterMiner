@@ -2,12 +2,12 @@ import twitter4j.Status;
 import twitter4j.User;
 
 /**
- * Created by glebu on 08-Feb-17.
+ * POJO that contain the status data that we want to persist
  */
 class StatusPOJO{
 
-    private long tweetID;
-    private long userID;
+    private long tweetid;
+    private long userid;
     private int retweets;
     private int favorites;
     private long timestamp;
@@ -23,16 +23,16 @@ class StatusPOJO{
         return keyword;
     }
 
-    public User getUser() {
+    User getUser() {
         return user;
     }
 
-    public void setTweetID(long tweetID) {
-        this.tweetID = tweetID;
+    public void setTweetID(long tweetid) {
+        this.tweetid = tweetid;
     }
 
-    public void setUserID(long userID) {
-        this.userID = userID;
+    public void setUserID(long userid) {
+        this.userid = userid;
     }
 
     public void setRetweets(int retweets) {
@@ -53,8 +53,8 @@ class StatusPOJO{
 
     public StatusPOJO(){}
     StatusPOJO(Status status, String keyword) {
-        this.tweetID = status.getId();
-        this.userID = status.getUser().getId();
+        this.tweetid = status.getId();
+        this.userid = status.getUser().getId();
         this.retweets = status.getRetweetCount();
         this.favorites = status.getFavoriteCount();
         this.timestamp = status.getCreatedAt().getTime();
@@ -64,11 +64,11 @@ class StatusPOJO{
     }
 
     public long getTweetID() {
-        return tweetID;
+        return tweetid;
     }
 
     public long getUserID() {
-        return userID;
+        return userid;
     }
 
     public int getRetweets() {

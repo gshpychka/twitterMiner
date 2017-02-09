@@ -1,12 +1,12 @@
 import twitter4j.User;
 
 /**
- * Created by glebu on 09-Feb-17.
+ * POJO that contains the user data that we want to persist
  */
 class UserPOJO {
     private String handle;
     private String name;
-    private long userID;
+    private long userid;
 
     public void setHandle(String handle) {
         this.handle = handle;
@@ -16,8 +16,8 @@ class UserPOJO {
         this.name = name;
     }
 
-    public void setUserID(long userID) {
-        this.userID = userID;
+    public void setUserID(long userid) {
+        this.userid = userid;
     }
 
     public void setFollowers(int followers) {
@@ -35,7 +35,7 @@ class UserPOJO {
     }
 
     public long getUserID() {
-        return userID;
+        return userid;
     }
 
     public int getFollowers() {
@@ -45,7 +45,7 @@ class UserPOJO {
     UserPOJO(User user) {
         this.handle = user.getName();
         this.name = user.getScreenName();
-        this.userID = user.getId();
+        this.userid = user.getId();
         this.followers = user.getFollowersCount();
 
     }
