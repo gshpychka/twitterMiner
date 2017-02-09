@@ -113,3 +113,7 @@ src/main/resources/
 src/test/
 /.idea/
 /src/main/java/TwitterApiToken.java
+!/src/main/resources/hibernate.cfg.xml
+!/src/main/resources/tweet.hbm.xml
+!/src/main/resources/user.hbm.xml
+/src/main/resources/hibernate.cfg.xml
