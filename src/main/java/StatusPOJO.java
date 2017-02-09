@@ -12,12 +12,11 @@ class StatusPOJO{
     private int favorites;
     private long timestamp;
     private String text;
+    private User user;
 
     public User getUser() {
         return user;
     }
-
-    private User user;
 
     public void setTweetID(long tweetID) {
         this.tweetID = tweetID;

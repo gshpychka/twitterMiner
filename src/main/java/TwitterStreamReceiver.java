@@ -33,10 +33,10 @@ class TwitterStreamReceiver {
 
     void processTweet(Status status){
         if(status.isRetweet()) {
-           databaseWriter.writeRetweetHibernate(new StatusPOJO(status.getRetweetedStatus()));
-           MyStatusListener.RETWEET_CCOUNT++;
+            databaseWriter.writeTweet(new StatusPOJO(status.getRetweetedStatus()));
+            MyStatusListener.RETWEET_CCOUNT++;
         } else {
-            databaseWriter.writeTweetHibernate(new StatusPOJO(status));
+            databaseWriter.writeTweet(new StatusPOJO(status));
             MyStatusListener.TWEET_COUNT++;
         }
     }
