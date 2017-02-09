@@ -15,6 +15,10 @@ class StatusPOJO{
     private User user;
     private String keyword;
 
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
+
     public String getKeyword() {
         return keyword;
     }

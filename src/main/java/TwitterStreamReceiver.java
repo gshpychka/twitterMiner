@@ -7,7 +7,7 @@ class TwitterStreamReceiver {
     private String keyword = "";
     private DatabaseWriter databaseWriter;
     private TwitterStream twitterStream;
-
+    private MyStatusListener listener;
     TwitterStreamReceiver(TwitterApiToken token, DatabaseWriter databaseWriter, String keyword) {
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(true)
@@ -18,7 +18,7 @@ class TwitterStreamReceiver {
 
         this.databaseWriter = databaseWriter;
         this.twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
-        StatusListener listener = new MyStatusListener(this);
+        listener = new MyStatusListener(this, keyword);
         this.twitterStream.addListener(listener);
         trackKeyword(keyword);
         this.keyword = keyword;
@@ -33,11 +33,11 @@ class TwitterStreamReceiver {
 
     void processTweet(Status status){
         if(status.isRetweet()) {
-            databaseWriter.writeTweet(new StatusPOJO(status.getRetweetedStatus()));
-            MyStatusListener.RETWEET_CCOUNT++;
+            databaseWriter.writeTweet(new StatusPOJO(status.getRetweetedStatus(), keyword));
+            listener.setRETWEET_CCOUNT(listener.getRETWEET_CCOUNT() + 1);
         } else {
-            databaseWriter.writeTweet(new StatusPOJO(status));
-            MyStatusListener.TWEET_COUNT++;
+            databaseWriter.writeTweet(new StatusPOJO(status, keyword));
+            listener.setTWEET_COUNT(listener.getTWEET_COUNT() + 1);
         }
     }
 
