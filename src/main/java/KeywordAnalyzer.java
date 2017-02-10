@@ -13,27 +13,39 @@ import java.util.logging.Level;
 class KeywordAnalyzer implements Runnable {
     private String keyword;
     private SessionFactory sessionFactory;
+    private String result;
+    private int i=0;
+    private int a=0;
     KeywordAnalyzer(String keyword) {
         this.keyword = keyword;
         this.sessionFactory = new Configuration().configure().buildSessionFactory();
         java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
     }
+
+    public String getResult() {
+        return result;
+    }
+
     public void run() {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         ScrollableResults results = session.createQuery("SELECT S FROM StatusPOJO S")
                 .setFetchSize(100)
                 .scroll(ScrollMode.FORWARD_ONLY);
-        int i=0;
-        int a=0;
+
         StatusPOJO statusPOJO;
         while (results.next()) {
             statusPOJO = (StatusPOJO) results.get(0);
-                i += statusPOJO.getRetweets();
-                System.out.println(statusPOJO.getRetweets() + " retweets. Total: " + i + ". Total entries: " + ++a);
+                if(statusPOJO.getText().contains(this.keyword)){
+                    i++;
+                }
+                ++a;
+                //System.out.println(" Total: " + i + ". Total entries: " + ++a);
                 session.evict(statusPOJO);
         }
         transaction.commit();
         session.close();
+        result = "\""+keyword+"\" occurs " + i + " times (" + (i*100)/a + "%). Total tweets analyzed: "+a+".\n";
+
     }
 }
