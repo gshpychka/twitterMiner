@@ -1,6 +1,10 @@
 
+import org.telegram.telegrambots.ApiContextInitializer;
+import org.telegram.telegrambots.TelegramBotsApi;
+import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
 import twitter4j.*;
 import java.io.IOException;
+import java.util.logging.Level;
 
 /**
  * Created by glebu on 01-Feb-17.
@@ -8,15 +12,18 @@ import java.io.IOException;
  */
 public class Main {
     public static void main (String[] args) throws TwitterException, IOException {
+        java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
+        TwitterApiToken token = new TwitterApiToken();
+        new TwitterStreamReceiver(token, new DatabaseWriter(),"Trump");
+        new TwitterStreamReceiver(token, new DatabaseWriter(), "Bannon");
+        ApiContextInitializer.init();
 
-        TwitterApiToken token = new TwitterApiToken("m6AVdSoBYmxnSFqDj0e6DnKg5",
-                "0QETuaG1fqpIET7mR5QA8TPP95dvS7dp2rWOFthkFzI5gPsRhl",
-                "67847124-DYAO5f29ePZhXWJqgpsaRNzA4LmUYHTKHXbMHEu5d",
-                "bjzvAB3i5glPJrkmw6CAH6sPeQuHSpiTp3E7Qbf88yNRE");
+        TelegramBotsApi botsApi = new TelegramBotsApi();
 
-        DatabaseWriter databaseWriter = new DatabaseWriter();
-        TwitterStreamReceiver twitterWriterTrump = new TwitterStreamReceiver(token, databaseWriter, "Trump");
-
-
+        try {
+            botsApi.registerBot(new TelegramBot());
+        } catch (TelegramApiRequestException e) {
+            e.printStackTrace();
+        }
     }
 }
