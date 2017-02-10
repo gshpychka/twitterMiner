@@ -1,10 +1,5 @@
 import org.hibernate.*;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.query.Query;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.util.logging.Level;
 
 /**
@@ -46,6 +41,6 @@ class KeywordAnalyzer implements Runnable {
         transaction.commit();
         session.close();
         result = "\""+keyword+"\" occurs " + i + " times (" + Double.toString(((((double)i*(double)100)/(double)a))) + "%). I am a work in progress, so excuse the precision. Total tweets analyzed: "+a+".\n";
-
+        System.out.println(result);
     }
 }
