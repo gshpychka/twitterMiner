@@ -45,7 +45,7 @@ class KeywordAnalyzer implements Runnable {
         }
         transaction.commit();
         session.close();
-        result = "\""+keyword+"\" occurs " + i + " times (" + (i*100)/a + "%). Total tweets analyzed: "+a+".\n";
+        result = "\""+keyword+"\" occurs " + i + " times (" + Double.toString((double)((i*100)/a)) + "%). Total tweets analyzed: "+a+".\n";
 
     }
 }

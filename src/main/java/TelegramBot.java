@@ -12,19 +12,25 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     public void onUpdateReceived(Update update) {
-        if(update.hasMessage() && update.getMessage().hasText()){
+        if(update.hasMessage() && update.getMessage().hasText() && update.getMessage().getText() != "/start"){
             KeywordAnalyzer keywordAnalyzer;
+            SendMessage message = new SendMessage()
+                    .setChatId(update.getMessage().getChatId())
+                    .setText("Hold on, working on your query....This may take some time...");
+            try {
+                sendMessage(message);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
             Thread thread = new Thread(keywordAnalyzer = new KeywordAnalyzer(update.getMessage().getText()));
+
             thread.start();
             try {
                 thread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            String result = keywordAnalyzer.getResult();
-            SendMessage message = new SendMessage()
-                    .setChatId(update.getMessage().getChatId())
-                    .setText(result);
+            message.setText(keywordAnalyzer.getResult());
             try {
                 sendMessage(message);
             } catch (TelegramApiException e) {

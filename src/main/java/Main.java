@@ -1,4 +1,7 @@
 
+import org.telegram.telegrambots.ApiContextInitializer;
+import org.telegram.telegrambots.TelegramBotsApi;
+import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
 import twitter4j.*;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -13,6 +16,14 @@ public class Main {
         TwitterApiToken token = new TwitterApiToken();
         new TwitterStreamReceiver(token, new DatabaseWriter(),"Trump");
         new TwitterStreamReceiver(token, new DatabaseWriter(), "Bannon");
-        //new Thread(new KeywordAnalyzer("impeach")).start();
+        ApiContextInitializer.init();
+
+        TelegramBotsApi botsApi = new TelegramBotsApi();
+
+        try {
+            botsApi.registerBot(new TelegramBot());
+        } catch (TelegramApiRequestException e) {
+            e.printStackTrace();
+        }
     }
 }
