@@ -12,11 +12,11 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     public void onUpdateReceived(Update update) {
-        if(update.hasMessage() && update.getMessage().hasText() && update.getMessage().getText() != "/start"){
+        if(update.hasMessage() && update.getMessage().hasText() && !update.getMessage().getText().equals("/start")){
             KeywordAnalyzer keywordAnalyzer;
             SendMessage message = new SendMessage()
                     .setChatId(update.getMessage().getChatId())
-                    .setText("Hold on, working on your query....This may take some time...");
+                    .setText("Hold on, working on your query. This may take some time.");
             try {
                 sendMessage(message);
             } catch (TelegramApiException e) {

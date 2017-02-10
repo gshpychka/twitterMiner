@@ -30,7 +30,7 @@ class KeywordAnalyzer implements Runnable {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         ScrollableResults results = session.createQuery("SELECT S FROM StatusPOJO S")
-                .setFetchSize(100)
+                .setFetchSize(10)
                 .scroll(ScrollMode.FORWARD_ONLY);
 
         StatusPOJO statusPOJO;
@@ -45,7 +45,7 @@ class KeywordAnalyzer implements Runnable {
         }
         transaction.commit();
         session.close();
-        result = "\""+keyword+"\" occurs " + i + " times (" + Double.toString((double)((i*100)/a)) + "%). Total tweets analyzed: "+a+".\n";
+        result = "\""+keyword+"\" occurs " + i + " times (" + Double.toString(((((double)i*(double)100)/(double)a))) + "%). I am a work in progress, so excuse the precision. Total tweets analyzed: "+a+".\n";
 
     }
 }
