@@ -1,20 +1,19 @@
 import org.hibernate.*;
 import org.hibernate.cfg.Configuration;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.List;
 import java.util.logging.Level;
 
 /**
- *  Analyzes the occurence of a keyword in the tweets
+ *  Analyzes the occurence of totalCounter keyword in the tweets
  */
 class KeywordAnalyzer implements Runnable {
     private String keyword;
     private SessionFactory sessionFactory;
     private String result="";
-    private int i=0;
-    private int a=0;
+
     //static ExecutorService executor = Executors.newSingleThreadExecutor();
     KeywordAnalyzer(String keyword) {
         this.keyword = keyword;
@@ -22,31 +21,50 @@ class KeywordAnalyzer implements Runnable {
         java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
     }
 
-    public String getResult() {
+    String getResult() {
         return result;
     }
 
     public void run() {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
+        long startTime = (new Date().getTime()/1000) - 60*60*24*7;
         ScrollableResults results = session.createQuery("SELECT S FROM StatusPOJO S WHERE timestamp > :startTime")
-                .setParameter("startTime", (new Date().getTime()/1000) - 60*60*24*7) //set start time to be current time - 1 week
+                .setParameter("startTime", startTime) //set start time to be current time - 1 week
                 .setFetchSize(10)
                 .scroll(ScrollMode.FORWARD_ONLY);
 
         StatusPOJO statusPOJO;
+
+        int data=0;
+        int containsCounter =0;
+        int totalCounter = 0;
+        int minuteCounter = 0;
+        List<Integer> averages = new ArrayList<>();
+        double weekAverage;
         while (results.next()) {
             statusPOJO = (StatusPOJO) results.get(0);
+            if((statusPOJO.getTimestamp() - startTime) < 60 && (statusPOJO.getTimestamp() - startTime) > 0){
                 if(statusPOJO.getText().contains(this.keyword)){
-                    i++;
+                    containsCounter++;
+                    data+=1000;
                 }
-                ++a;
-                System.out.println(" Total: " + i + ". Total entries: " + a);
-                session.evict(statusPOJO);
+                minuteCounter++;
+                totalCounter++;
+            } else {
+                averages.add(data/minuteCounter);
+            }
+            int sum =0;
+            for (int i : averages) {
+                sum += i;
+            }
+            weekAverage = (double) sum/averages.size() ;
+            System.out.println(" Total: " + containsCounter + ". Total entries: " + totalCounter + ". Week average: " + weekAverage);
+            session.evict(statusPOJO);
         }
         transaction.commit();
         session.close();
-        result = "\""+keyword+"\" occurs " + i + " times (" + Double.toString((double)(i*100)/a) + "%). I am a work in progress, so excuse the precision. Total tweets analyzed: "+a+".\n";
+        result = "\""+keyword+"\" occurs " + containsCounter + " times (" + Double.toString((double)(containsCounter *100)/ totalCounter) + "%). I am totalCounter work in progress, so excuse the precision. Total tweets analyzed: "+ totalCounter +".\n";
         System.out.println(result);
     }
 }
