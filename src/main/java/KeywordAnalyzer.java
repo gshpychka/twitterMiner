@@ -40,6 +40,7 @@ class KeywordAnalyzer implements Runnable {
         int containsCounter =0;
         int totalCounter = 0;
         int minuteCounter = 0;
+        int minuteAverage;
         List<Integer> averages = new ArrayList<>();
         double weekAverage;
         while (results.next()) {
@@ -52,7 +53,11 @@ class KeywordAnalyzer implements Runnable {
                 minuteCounter++;
                 totalCounter++;
             } else {
-                averages.add(data/minuteCounter);
+                if(minuteCounter == 0)
+                    minuteAverage = 0;
+                else
+                    minuteAverage = data/minuteCounter;
+                averages.add(minuteAverage);
                 data = 0;
                 startTime += 60;
                 minuteCounter = 0;
