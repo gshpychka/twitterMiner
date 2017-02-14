@@ -57,7 +57,7 @@ class StatusPOJO{
         this.userID = status.getUser().getId();
         this.retweets = status.getRetweetCount();
         this.favorites = status.getFavoriteCount();
-        this.timestamp = status.getCreatedAt().getTime();
+        this.timestamp = status.getCreatedAt().getTime()/1000;
         this.text = status.getText();
         this.user = status.getUser();
         this.keyword = keyword;

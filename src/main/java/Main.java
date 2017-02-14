@@ -11,17 +11,18 @@ import java.util.logging.Level;
  * The main class.
  */
 public class Main {
+    static TelegramBot bot;
     public static void main (String[] args) throws TwitterException, IOException {
         java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
         TwitterApiToken token = new TwitterApiToken();
         new TwitterStreamReceiver(token, new DatabaseWriter(),"Trump");
         new TwitterStreamReceiver(token, new DatabaseWriter(), "Bannon");
+
         ApiContextInitializer.init();
-
         TelegramBotsApi botsApi = new TelegramBotsApi();
-
+        bot = new TelegramBot();
         try {
-            botsApi.registerBot(new TelegramBot());
+            botsApi.registerBot(bot);
         } catch (TelegramApiRequestException e) {
             e.printStackTrace();
         }

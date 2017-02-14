@@ -20,7 +20,7 @@ class MyStatusListener implements StatusListener {
     public void onStatus(Status status) {
         if(status.getQuotedStatus() == null) {
             twitterStreamReceiver.processTweet(status);
-            System.out.println(++i + " total. Original tweets: " + TWEET_COUNT + " ("+ (TWEET_COUNT * 100 )/i +"%). Retweet count: " + RETWEET_CCOUNT + " (" + (RETWEET_CCOUNT * 100)/i + "%). Keyword: " + keyword);
+            //System.out.println(++i + " total. Original tweets: " + TWEET_COUNT + " ("+ (TWEET_COUNT * 100 )/i +"%). Retweet count: " + RETWEET_CCOUNT + " (" + (RETWEET_CCOUNT * 100)/i + "%). Keyword: " + keyword);
         }
     }
     public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {}
