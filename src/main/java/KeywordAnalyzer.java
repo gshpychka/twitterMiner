@@ -53,18 +53,21 @@ class KeywordAnalyzer implements Runnable {
                 totalCounter++;
             } else {
                 averages.add(data/minuteCounter);
+                data = 0;
+                startTime += 60;
+                minuteCounter = 0;
             }
-            int sum =0;
-            for (int i : averages) {
-                sum += i;
-            }
-            weekAverage = (double) sum/averages.size() ;
-            System.out.println(" Total: " + containsCounter + ". Total entries: " + totalCounter + ". Week average: " + weekAverage);
             session.evict(statusPOJO);
         }
         transaction.commit();
         session.close();
+        int sum =0;
+        for (int i : averages) {
+            sum += i;
+        }
+        weekAverage = (double) sum/averages.size() ;
+        System.out.println(" Total: " + containsCounter + ". Total entries: " + totalCounter + ". Week average: " + weekAverage);
         result = "\""+keyword+"\" occurs " + containsCounter + " times (" + Double.toString((double)(containsCounter *100)/ totalCounter) + "%). I am totalCounter work in progress, so excuse the precision. Total tweets analyzed: "+ totalCounter +".\n";
-        System.out.println(result);
+        //System.out.println(result);
     }
 }
