@@ -36,7 +36,6 @@ class KeywordAnalyzer implements Runnable {
         int minuteCounter=0;
         BigDecimal minuteAverage;
         BigDecimal totalAverage = new BigDecimal("1000").setScale(2,BigDecimal.ROUND_HALF_UP);
-        assert totalAverage.intValue()==1000; // debugging
         List<BigDecimal> averages = new ArrayList<>();
         StatusPOJO statusPOJO;
         long analysisPeriod = 60*60*24; //24 hours
@@ -44,6 +43,7 @@ class KeywordAnalyzer implements Runnable {
         HibernateInit hibernate;
         while (true) {
             ScrollableResults results = getTweetsSince(startTime, hibernate = new HibernateInit());
+            System.out.println("got results starting from "+ startTime);
             while (results.next()) {
                 statusPOJO = (StatusPOJO) results.get(0);
                 if((statusPOJO.getTimestamp() - startTime) > 0) {
@@ -57,28 +57,30 @@ class KeywordAnalyzer implements Runnable {
                             minuteAverage = new BigDecimal("0.0").setScale(2,BigDecimal.ROUND_HALF_UP);
                         else
                             minuteAverage = new BigDecimal((double)data / minuteCounter).setScale(2,BigDecimal.ROUND_HALF_UP);
-                        averages.add(minuteAverage);
                         data = 0;
                         startTime += 60;
                         minuteCounter = 0;
                         if (averages.size() < analysisPeriod / 60) {
                             averages.add(minuteAverage);
+                            System.out.println("Size: " + averages.size() + " < " + analysisPeriod / 60);
                         } else if (averages.size() == analysisPeriod / 60) {
                             if (totalAverage.intValue()!=1000) {
-                                totalAverage = totalAverage.subtract(averages.get(0).divide(new BigDecimal(averages.size()))).add(minuteAverage.divide(new BigDecimal(averages.size())));
+                                totalAverage.subtract(averages.get(0).divide(new BigDecimal(averages.size()))).add(minuteAverage.divide(new BigDecimal(averages.size())));
                                 // ^ totalAverage = totalAverage - firstElement/averages.size() + newElement/averages.size()
                                 averages.remove(0);
                                 averages.add(minuteAverage);
+                                System.out.println("Size: " + averages.size());
                             } else {
                                 BigDecimal sum = new BigDecimal("0").setScale(2,BigDecimal.ROUND_HALF_UP);
                                 for (BigDecimal bd : averages) {
-                                    sum.add(bd);
+                                    totalAverage.add(bd);
                                 }
-                                totalAverage = sum;
+                                totalAverage.divide(new BigDecimal(averages.size()));
                             }
                             System.out.println(totalAverage.toString());
                         } else {
                             averages.remove(0);
+                            System.out.println("error, more than ");
                         }
                     }
                 }
