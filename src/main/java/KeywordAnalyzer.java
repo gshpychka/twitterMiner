@@ -67,7 +67,7 @@ class KeywordAnalyzer implements Runnable {
                         System.out.println("Size: " + averages.size() + " < " + analysisPeriod / 60);
                     } else if (averages.size() == (analysisPeriod / 60)) {
                         if (totalAverage.intValue()!=1000) {
-                            totalAverage = totalAverage.subtract(averages.get(0).divide(new BigDecimal(averages.size()))).add(minuteAverage.divide(new BigDecimal(averages.size())));
+                            totalAverage = totalAverage.subtract(averages.get(0).divide(new BigDecimal(averages.size()),2,BigDecimal.ROUND_HALF_UP)).add(minuteAverage.divide(new BigDecimal(averages.size()),2,BigDecimal.ROUND_HALF_UP));
                             // ^ totalAverage = totalAverage - firstElement/averages.size() + newElement/averages.size()
                             averages.remove(0);
                             averages.add(minuteAverage);
@@ -89,7 +89,7 @@ class KeywordAnalyzer implements Runnable {
                 for (BigDecimal bd : averages) {
                     sum+=bd.intValue();
                 }
-                totalAverage = new BigDecimal(Integer.toString(sum)).setScale(2,BigDecimal.ROUND_HALF_UP).divide(new BigDecimal(averages.size()).setScale(2,BigDecimal.ROUND_HALF_UP));
+                totalAverage = new BigDecimal(Integer.toString(sum)).setScale(2,BigDecimal.ROUND_HALF_UP).divide(new BigDecimal(averages.size()),2,BigDecimal.ROUND_HALF_UP);
                 System.out.println("After for loop: " + totalAverage.toString());
             }
             while ((new Date().getTime() / 1000 - startTime) < 60) {
