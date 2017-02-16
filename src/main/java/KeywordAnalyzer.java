@@ -74,7 +74,7 @@ class KeywordAnalyzer implements Runnable {
                                 for (BigDecimal bd : averages) {
                                     sum.add(bd);
                                 }
-
+                                totalAverage = sum;
                             }
                             System.out.println(totalAverage.toString());
                         } else {
@@ -93,6 +93,7 @@ class KeywordAnalyzer implements Runnable {
                     e.printStackTrace();
                 }
             }
+            System.out.println(totalAverage.toString());
         }
 
         //System.out.println(" Total: " + containsCounter + ". Total entries: " + totalCounter + ". Week average: " + weekAverage + ". Number of minutes: " + averages.size() + ". The analysis took " + ((new Date().getTime()/1000) - beginTime) + " seconds.");

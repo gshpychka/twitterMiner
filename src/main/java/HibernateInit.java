@@ -12,8 +12,8 @@ public class HibernateInit {
     private Transaction transaction;
 
     HibernateInit() {
-        this.session = sessionFactory.openSession();
         this.sessionFactory = new Configuration().configure().buildSessionFactory();
+        this.session = sessionFactory.openSession();
         this.transaction = session.beginTransaction();
     }
 

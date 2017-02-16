@@ -18,13 +18,14 @@ public class Main {
         new TwitterStreamReceiver(token, new DatabaseWriter(),"Trump");
         new TwitterStreamReceiver(token, new DatabaseWriter(), "Bannon");
 
-        ApiContextInitializer.init();
-        TelegramBotsApi botsApi = new TelegramBotsApi();
-        bot = new TelegramBot();
-        try {
-            botsApi.registerBot(bot);
-        } catch (TelegramApiRequestException e) {
-            e.printStackTrace();
-        }
+//        ApiContextInitializer.init();
+//        TelegramBotsApi botsApi = new TelegramBotsApi();
+//        bot = new TelegramBot();
+//        try {
+//            botsApi.registerBot(bot);
+//        } catch (TelegramApiRequestException e) {
+//            e.printStackTrace();
+//        }
+        new Thread(new KeywordAnalyzer("impeach")).start();
     }
 }
