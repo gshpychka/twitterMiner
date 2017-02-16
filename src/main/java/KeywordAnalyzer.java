@@ -72,15 +72,7 @@ class KeywordAnalyzer implements Runnable {
                             averages.remove(0);
                             averages.add(minuteAverage);
                             System.out.println("Size: " + averages.size());
-                        } else {
-                            totalAverage = new BigDecimal("0").setScale(2,BigDecimal.ROUND_HALF_UP);
-                            for (BigDecimal bd : averages) {
-                                totalAverage = totalAverage.add(bd).setScale(2,BigDecimal.ROUND_HALF_UP);
-                            }
-                            totalAverage = totalAverage.divide(new BigDecimal(averages.size())).setScale(2,BigDecimal.ROUND_HALF_UP);
-                            System.out.println("After for loop: " + totalAverage.toString());
                         }
-
                     } else {
                         averages.remove(0);
                         System.out.println("error, more than ");
@@ -91,6 +83,15 @@ class KeywordAnalyzer implements Runnable {
             }
             hibernate.getTransaction().commit();
             hibernate.getSession().close();
+
+            if (totalAverage.intValue() == 1000) {
+                int sum =0;
+                for (BigDecimal bd : averages) {
+                    sum+=bd.intValue();
+                }
+                totalAverage = new BigDecimal(Integer.toString(sum)).setScale(2,BigDecimal.ROUND_HALF_UP).divide(new BigDecimal(averages.size()).setScale(2,BigDecimal.ROUND_HALF_UP));
+                System.out.println("After for loop: " + totalAverage.toString());
+            }
             while ((new Date().getTime() / 1000 - startTime) < 60) {
                 try {
                     TimeUnit.MILLISECONDS.sleep(100);
