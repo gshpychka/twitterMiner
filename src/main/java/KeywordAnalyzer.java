@@ -13,22 +13,18 @@ import java.util.logging.Level;
  */
 class KeywordAnalyzer implements Runnable {
     private String keyword;
-    private SessionFactory sessionFactory;
     private String result="";
-    long startTime = (new Date().getTime()/1000) - 60*60*24*1;
-    //static ExecutorService executor = Executors.newSingleThreadExecutor();
+
     KeywordAnalyzer(String keyword) {
         this.keyword = keyword;
-        this.sessionFactory = new Configuration().configure().buildSessionFactory();
         java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
     }
 
     String getResult() {
         return result;
     }
-    ScrollableResults getTweetsSince(long startTime) {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
+    ScrollableResults getTweetsSince(long startTime, HibernateInit hibernate) {
+        Session session = hibernate.getSession();
         return session.createQuery("SELECT S FROM StatusPOJO S WHERE timestamp > :startTime ORDER BY timestamp ASC")
                 .setParameter("startTime", startTime)
                 .setFetchSize(10) //need to tweak this
@@ -45,8 +41,9 @@ class KeywordAnalyzer implements Runnable {
         StatusPOJO statusPOJO;
         long analysisPeriod = 60*60*24; //24 hours
         long startTime = new Date().getTime()/1000 - analysisPeriod;
+        HibernateInit hibernate;
         while (true) {
-            ScrollableResults results = getTweetsSince(startTime);
+            ScrollableResults results = getTweetsSince(startTime, hibernate = new HibernateInit());
             while (results.next()) {
                 statusPOJO = (StatusPOJO) results.get(0);
                 if((statusPOJO.getTimestamp() - startTime) > 0) {
@@ -85,10 +82,10 @@ class KeywordAnalyzer implements Runnable {
                         }
                     }
                 }
-                session.evict(statusPOJO);
+                hibernate.getSession().evict(statusPOJO);
             }
-            transaction.commit();
-            session.close();
+            hibernate.getTransaction().commit();
+            hibernate.getSession().close();
             while ((new Date().getTime() / 1000 - startTime) < 60) {
                 try {
                     TimeUnit.MILLISECONDS.sleep(100);
@@ -96,7 +93,6 @@ class KeywordAnalyzer implements Runnable {
                     e.printStackTrace();
                 }
             }
-
         }
 
         //System.out.println(" Total: " + containsCounter + ". Total entries: " + totalCounter + ". Week average: " + weekAverage + ". Number of minutes: " + averages.size() + ". The analysis took " + ((new Date().getTime()/1000) - beginTime) + " seconds.");
