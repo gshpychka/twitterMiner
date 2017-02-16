@@ -43,7 +43,6 @@ class KeywordAnalyzer implements Runnable {
         HibernateInit hibernate;
         while (true) {
             ScrollableResults results = getTweetsSince(startTime, hibernate = new HibernateInit());
-            System.out.println("got results starting from "+ startTime);
             while (results.next()) {
                 statusPOJO = (StatusPOJO) results.get(0);
                 assert((statusPOJO.getTimestamp() - startTime) > 0);
@@ -71,7 +70,7 @@ class KeywordAnalyzer implements Runnable {
                             // ^ totalAverage = totalAverage - firstElement/averages.size() + newElement/averages.size()
                             averages.remove(0);
                             averages.add(minuteAverage);
-                            System.out.println("Size: " + averages.size());
+                            System.out.println("Minute: " + minuteAverage);
                         }
                     } else {
                         averages.remove(0);
@@ -92,13 +91,7 @@ class KeywordAnalyzer implements Runnable {
                 totalAverage = new BigDecimal(Integer.toString(sum)).setScale(2,BigDecimal.ROUND_HALF_UP).divide(new BigDecimal(averages.size()),2,BigDecimal.ROUND_HALF_UP);
                 System.out.println("After for loop: " + totalAverage.toString());
             }
-            while ((new Date().getTime() / 1000 - startTime) < 60) {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            while ((new Date().getTime() / 1000 - startTime) < 60) {}
             System.out.println(totalAverage.toString());
         }
 

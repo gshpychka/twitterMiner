@@ -6,7 +6,7 @@ import org.hibernate.cfg.Configuration;
 /**
  * Created by glebu on 16-Feb-17.
  */
-public class HibernateInit {
+class HibernateInit {
     private SessionFactory sessionFactory;
     private Session session;
     private Transaction transaction;
@@ -17,11 +17,11 @@ public class HibernateInit {
         this.transaction = session.beginTransaction();
     }
 
-    public Session getSession() {
+    Session getSession() {
         return session;
     }
 
-    public Transaction getTransaction() {
+    Transaction getTransaction() {
         return transaction;
     }
 }

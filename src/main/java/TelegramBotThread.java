@@ -5,7 +5,7 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 /**
  * Created by glebu on 11-Feb-17.
  */
-public class TelegramBotThread implements Runnable {
+class TelegramBotThread implements Runnable {
     private Update update;
 
     TelegramBotThread(Update update) {
@@ -18,7 +18,6 @@ public class TelegramBotThread implements Runnable {
                     .setChatId(update.getMessage().getChatId());
 
             keywordAnalyzer = new KeywordAnalyzer(update.getMessage().getText());
-//          if(KeywordAnalyzer.analyzerThread == null || !KeywordAnalyzer.analyzerThread.isAlive()) {
             message.setText("Hold on, working on your query. This may take some time.");
             try {
                 Main.bot.sendMessage(message);

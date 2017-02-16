@@ -9,11 +9,11 @@ import java.util.concurrent.Executors;
 /**
  * Created by glebu on 10-Feb-17.
  */
-public class TelegramBot extends TelegramLongPollingBot {
+class TelegramBot extends TelegramLongPollingBot {
     public String getBotToken() {
         return "375446890:AAECbxoa97GN8NjihxhXlfYWKNBjiLpsvHA";
     }
-    ExecutorService executor = Executors.newFixedThreadPool(5);
+    private ExecutorService executor = Executors.newFixedThreadPool(5);
     public void onUpdateReceived(Update update) {
         executor.execute(new TelegramBotThread(update));
     }

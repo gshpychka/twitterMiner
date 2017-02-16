@@ -26,6 +26,6 @@ public class Main {
 //        } catch (TelegramApiRequestException e) {
 //            e.printStackTrace();
 //        }
-        new Thread(new KeywordAnalyzer("impeach")).start();
+        //new Thread(new KeywordAnalyzer("impeach")).start();
     }
 }
