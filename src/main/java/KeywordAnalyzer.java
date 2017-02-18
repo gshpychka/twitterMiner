@@ -13,10 +13,9 @@ import java.util.logging.Level;
  */
 class KeywordAnalyzer implements Runnable {
     private String keyword;
-    private String result="";
     private SessionFactory sessionFactory;
     private Session session;
-    static BigDecimal minuteAverage;
+    static BigDecimal totalAverage = new BigDecimal("1000").setScale(2,BigDecimal.ROUND_HALF_UP);
     KeywordAnalyzer(String keyword) {
         this.keyword = keyword;
         java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
@@ -33,7 +32,7 @@ class KeywordAnalyzer implements Runnable {
     public void run() {
         int data=0;
         int minuteCounter=0;
-        BigDecimal totalAverage = new BigDecimal("1000").setScale(2,BigDecimal.ROUND_HALF_UP);
+        BigDecimal minuteAverage;
         List<BigDecimal> averages = new ArrayList<>();
         StatusPOJO statusPOJO;
         long analysisPeriod = 60*60; //24 hours
