@@ -23,4 +23,12 @@ class DatabaseWriter {
         transaction.commit();
         session.close();
     }
+
+    void persist(Object object) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        session.save(object);
+        transaction.commit();
+        session.close();
+    }
 }

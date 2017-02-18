@@ -14,17 +14,16 @@ import java.util.logging.Level;
 class KeywordAnalyzer implements Runnable {
     private String keyword;
     private String result="";
-
+    private SessionFactory sessionFactory;
+    private Session session;
+    static BigDecimal minuteAverage;
     KeywordAnalyzer(String keyword) {
         this.keyword = keyword;
         java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
+        sessionFactory = new Configuration().configure().buildSessionFactory();
     }
 
-    String getResult() {
-        return result;
-    }
-    ScrollableResults getTweetsSince(long startTime, HibernateInit hibernate) {
-        Session session = hibernate.getSession();
+    private ScrollableResults getTweetsSince(long startTime, Session session) {
         return session.createQuery("SELECT S FROM StatusPOJO S WHERE timestamp > :startTime ORDER BY timestamp ASC")
                 .setParameter("startTime", startTime)
                 .setFetchSize(10) //need to tweak this
@@ -34,15 +33,17 @@ class KeywordAnalyzer implements Runnable {
     public void run() {
         int data=0;
         int minuteCounter=0;
-        BigDecimal minuteAverage;
         BigDecimal totalAverage = new BigDecimal("1000").setScale(2,BigDecimal.ROUND_HALF_UP);
         List<BigDecimal> averages = new ArrayList<>();
         StatusPOJO statusPOJO;
-        long analysisPeriod = 60*60*24; //24 hours
+        long analysisPeriod = 60*60; //24 hours
         long startTime = new Date().getTime()/1000 - analysisPeriod;
-        HibernateInit hibernate;
+        int persistCounter;
         while (true) {
-            ScrollableResults results = getTweetsSince(startTime, hibernate = new HibernateInit());
+            persistCounter=1;
+            session = sessionFactory.openSession();
+            Transaction tx = session.beginTransaction();
+            ScrollableResults results = getTweetsSince(startTime,session);
             while (results.next()) {
                 statusPOJO = (StatusPOJO) results.get(0);
                 assert((statusPOJO.getTimestamp() - startTime) > 0);
@@ -58,12 +59,18 @@ class KeywordAnalyzer implements Runnable {
                         minuteAverage = new BigDecimal(Double.toString((double)data / minuteCounter)).setScale(2,BigDecimal.ROUND_HALF_UP);
                     data = 0;
                     minuteCounter = 0;
+
+                    session.save(new DataPointAverage(startTime, minuteAverage));
+                    persistCounter++;
+                    if (persistCounter % 100 == 0) {
+                        session.flush();
+                        session.clear();
+                        System.out.println("Cleared session");
+                    }
                     startTime += 60;
 
                     if (averages.size() < (analysisPeriod / 60)) {
                         averages.add(minuteAverage);
-                        System.out.println("minute: " + minuteAverage.toString());
-                        System.out.println("Size: " + averages.size() + " < " + analysisPeriod / 60);
                     } else if (averages.size() == (analysisPeriod / 60)) {
                         if (totalAverage.intValue()!=1000) {
                             totalAverage = totalAverage.subtract(averages.get(0).divide(new BigDecimal(averages.size()),2,BigDecimal.ROUND_HALF_UP)).add(minuteAverage.divide(new BigDecimal(averages.size()),2,BigDecimal.ROUND_HALF_UP));
@@ -78,26 +85,21 @@ class KeywordAnalyzer implements Runnable {
                     }
                 }
 
-                hibernate.getSession().evict(statusPOJO);
+                session.evict(statusPOJO);
             }
-            hibernate.getTransaction().commit();
-            hibernate.getSession().close();
+            tx.commit();
+            session.close();
 
             if (totalAverage.intValue() == 1000) {
-                int sum =0;
+                BigDecimal sum = new BigDecimal("0").setScale(3,BigDecimal.ROUND_HALF_UP);
                 for (BigDecimal bd : averages) {
-                    sum+=bd.intValue();
+                    sum = sum.add(bd);
                 }
-                totalAverage = new BigDecimal(Integer.toString(sum)).setScale(2,BigDecimal.ROUND_HALF_UP).divide(new BigDecimal(averages.size()),2,BigDecimal.ROUND_HALF_UP);
+                totalAverage = sum.divide(new BigDecimal(averages.size()),2,BigDecimal.ROUND_HALF_UP);
                 System.out.println("After for loop: " + totalAverage.toString());
             }
             while ((new Date().getTime() / 1000 - startTime) < 60) {}
             System.out.println(totalAverage.toString());
         }
-
-        //System.out.println(" Total: " + containsCounter + ". Total entries: " + totalCounter + ". Week average: " + weekAverage + ". Number of minutes: " + averages.size() + ". The analysis took " + ((new Date().getTime()/1000) - beginTime) + " seconds.");
-
-        //result = "\""+keyword+"\" occurs " + containsCounter + " times (" + Double.toString((double)(containsCounter *100)/ totalCounter) + "%). I am totalCounter work in progress, so excuse the precision. Total tweets analyzed: "+ totalCounter +".\n";
-        //System.out.println(result);
     }
 }

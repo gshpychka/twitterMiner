@@ -13,25 +13,9 @@ class TelegramBotThread implements Runnable {
     }
     public void run() {
         if(update.hasMessage() && update.getMessage().hasText() && !update.getMessage().getText().equals("/start")){
-            KeywordAnalyzer keywordAnalyzer;
             SendMessage message = new SendMessage()
                     .setChatId(update.getMessage().getChatId());
-
-            keywordAnalyzer = new KeywordAnalyzer(update.getMessage().getText());
-            message.setText("Hold on, working on your query. This may take some time.");
-            try {
-                Main.bot.sendMessage(message);
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
-            Thread thread = new Thread(keywordAnalyzer);
-            thread.start();
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            message.setText(keywordAnalyzer.getResult());
+            message.setText("In the last hour, "+KeywordAnalyzer.minuteAverage+"% of tweets mention impeachment.");
             try {
                 Main.bot.sendMessage(message);
             } catch (TelegramApiException e) {
