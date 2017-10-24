@@ -7,6 +7,15 @@ class DataPointAverage {
     private long startTime;
     private BigDecimal dataPoint;
     private int id;
+    private String keyword;
+
+    String getKeyword() {
+        return keyword;
+    }
+
+    void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
 
     public int getId() {
         return id;
@@ -33,9 +42,10 @@ class DataPointAverage {
         return dataPoint;
     }
 
-    DataPointAverage(long startTime, BigDecimal dataPoint) {
+    DataPointAverage(long startTime, BigDecimal dataPoint, String keyword) {
         this.startTime = startTime;
         this.dataPoint = dataPoint;
+        this.keyword = keyword;
 
     }
 }

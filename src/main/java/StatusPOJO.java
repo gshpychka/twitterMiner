@@ -58,9 +58,10 @@ class StatusPOJO{
         this.retweets = status.getRetweetCount();
         this.favorites = status.getFavoriteCount();
         this.timestamp = status.getCreatedAt().getTime()/1000;
-        this.text = status.getText();
+        this.text = status.getText().substring(0,Math.min(status.getText().length(),300));
         this.user = status.getUser();
         this.keyword = keyword;
+
     }
 
     public long getTweetID() {

@@ -34,7 +34,7 @@ class TwitterStreamReceiver {
     void processTweet(Status status){
         if(status.isRetweet()) {
             status = status.getRetweetedStatus();
-            listener.setRETWEET_CCOUNT(listener.getRETWEET_CCOUNT() + 1);
+            listener.setRETWEET_COUNT(listener.getRETWEET_COUNT() + 1);
         } else {
             listener.setTWEET_COUNT(listener.getTWEET_COUNT() + 1);
         }

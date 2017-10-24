@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 /**
- *  Analyzes the occurence of totalCounter keyword in the tweets
+ *  Analyzes the occurrence of totalCounter keyword in the tweets
  */
 class KeywordAnalyzer implements Runnable {
     private String keyword;
@@ -39,7 +39,7 @@ class KeywordAnalyzer implements Runnable {
         long startTime = new Date().getTime()/1000 - analysisPeriod;
         int persistCounter;
         while (true) {
-            persistCounter=1;
+            persistCounter=0;
             session = sessionFactory.openSession();
             Transaction tx = session.beginTransaction();
             ScrollableResults results = getTweetsSince(startTime,session);
@@ -58,10 +58,9 @@ class KeywordAnalyzer implements Runnable {
                         minuteAverage = new BigDecimal(Double.toString((double)data / minuteCounter)).setScale(2,BigDecimal.ROUND_HALF_UP);
                     data = 0;
                     minuteCounter = 0;
-
-                    session.save(new DataPointAverage(startTime, minuteAverage));
+                    session.saveOrUpdate(new DataPointAverage(startTime,minuteAverage,keyword));
                     persistCounter++;
-                    if (persistCounter % 100 == 0) {
+                    if (persistCounter % 20 == 0) {
                         session.flush();
                         session.clear();
                         System.out.println("Cleared session");
