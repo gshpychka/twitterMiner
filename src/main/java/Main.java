@@ -18,9 +18,9 @@ public class Main {
     public static void main (String[] args) throws TwitterException, IOException {
         //java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
         TwitterApiToken token = new TwitterApiToken();
-        new TwitterStreamReceiver(token, new DatabaseWriter(),"Trump");
+        new TwitterStreamReceiver( new DatabaseWriter(),"Trump");
         logger.error("Oh no");
-        new TwitterStreamReceiver(token, new DatabaseWriter(), "Bannon");
+        new TwitterStreamReceiver(new DatabaseWriter(), "Bannon");
 
         //ApiContextInitializer.init();
 //        TelegramBotsApi botsApi = new TelegramBotsApi();

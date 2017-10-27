@@ -8,13 +8,8 @@ class TwitterStreamReceiver {
     private DatabaseWriter databaseWriter;
     private TwitterStream twitterStream;
     private MyStatusListener listener;
-    TwitterStreamReceiver(TwitterApiToken token, DatabaseWriter databaseWriter, String keyword) {
+    TwitterStreamReceiver(DatabaseWriter databaseWriter, String keyword) {
         ConfigurationBuilder cb = new ConfigurationBuilder();
-        cb.setDebugEnabled(true)
-                .setOAuthConsumerKey(token.getConsumerKey())
-                .setOAuthConsumerSecret(token.getConsumerSecret())
-                .setOAuthAccessToken(token.getAccessToken())
-                .setOAuthAccessTokenSecret(token.getAccessTokenSecret());
 
         this.databaseWriter = databaseWriter;
         this.twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
