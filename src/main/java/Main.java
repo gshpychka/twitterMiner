@@ -1,6 +1,6 @@
 
-import org.apache.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.*;
+import org.apache.logging.log4j.Logger;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
@@ -14,7 +14,7 @@ import java.util.logging.Level;
  */
 public class Main {
     static TelegramBot bot;
-    private static org.apache.logging.log4j.Logger logger = LogManager.getLogger();
+    private static Logger logger = LogManager.getLogger();
     public static void main (String[] args) throws TwitterException, IOException {
         //java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
         TwitterApiToken token = new TwitterApiToken();

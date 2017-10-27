@@ -11,7 +11,7 @@ import java.util.logging.Level;
 class DatabaseWriter {
     private SessionFactory sessionFactory;
     DatabaseWriter(){
-        java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
+        //java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
         this.sessionFactory = new Configuration().configure().buildSessionFactory();
     }
 

@@ -1,4 +1,6 @@
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import twitter4j.*;
 
 import java.io.IOException;
@@ -7,6 +9,7 @@ import java.io.IOException;
  * Created by glebu on 02-Feb-17.
  */
 class MyStatusListener implements StatusListener {
+    private static Logger logger = LogManager.getLogger();
     private int RETWEET_COUNT;
     private int TWEET_COUNT;
     private int i =0;
@@ -20,13 +23,13 @@ class MyStatusListener implements StatusListener {
     public void onStatus(Status status) {
         if(status.getQuotedStatus() == null) {
             twitterStreamReceiver.processTweet(status);
-            System.out.println(++i + " total. Original tweets: " + TWEET_COUNT + " ("+ (TWEET_COUNT * 100 )/i +"%). Retweet count: " + RETWEET_COUNT + " (" + (RETWEET_COUNT * 100)/i + "%). Keyword: " + keyword);
+            logger.info(++i + " total. Original tweets: " + TWEET_COUNT + " ("+ (TWEET_COUNT * 100 )/i +"%). Retweet count: " + RETWEET_COUNT + " (" + (RETWEET_COUNT * 100)/i + "%). Keyword: " + keyword);
         }
     }
     public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {}
     public void onTrackLimitationNotice(int numberOfLimitedStatuses) {}
     public void onException(Exception ex) {
-        ex.printStackTrace();
+        logger.error(ex);
     }
     public void onStallWarning(StallWarning stallWarning) {}
     public void onScrubGeo(long l, long l1) {}
