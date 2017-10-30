@@ -15,7 +15,7 @@ class TelegramBotThread implements Runnable {
         if(update.hasMessage() && update.getMessage().hasText() && !update.getMessage().getText().equals("/start")){
             SendMessage message = new SendMessage()
                     .setChatId(update.getMessage().getChatId());
-            message.setText("In the last hour, "+KeywordAnalyzer.totalAverage+"% of tweets mention impeachment.");
+            //message.setText("In the last hour, "+KeywordAnalyzer.totalAverage+"% of tweets mention impeachment.");
             try {
                 Main.bot.sendMessage(message);
             } catch (TelegramApiException e) {

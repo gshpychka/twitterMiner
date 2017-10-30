@@ -15,9 +15,9 @@ public class Main {
     static TelegramBot bot;
     private static Logger logger = LogManager.getLogger();
     public static void main (String[] args) throws TwitterException, IOException {
-        new TwitterStreamReceiver( new DatabaseWriter(),"Trump");
+        new TwitterStreamReceiver("Trump");
         logger.error("Oh no");
-        new TwitterStreamReceiver(new DatabaseWriter(), "Bannon");
+        new TwitterStreamReceiver( "Bannon");
 
         //ApiContextInitializer.init();
 //        TelegramBotsApi botsApi = new TelegramBotsApi();

@@ -9,13 +9,12 @@ import java.util.logging.Level;
  *  Writes the tweet to the database using Hibernate
  */
 class DatabaseWriter {
-    private SessionFactory sessionFactory;
+    static private SessionFactory sessionFactory = HibernateSessionFactory.factory;
     DatabaseWriter(){
-        //java.util.logging.Logger.getLogger("org.hibernate").setLevel(Level.OFF);
-        this.sessionFactory = new Configuration().configure().buildSessionFactory();
+
     }
 
-    void writeTweet(StatusPOJO status) {
+    static void writeTweet(StatusPOJO status) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
         session.saveOrUpdate(new UserPOJO(status.getUser()));
@@ -24,10 +23,10 @@ class DatabaseWriter {
         session.close();
     }
 
-    void persist(Object object) {
+    static void persist(Object object) {
         Session session = sessionFactory.openSession();
         Transaction transaction = session.beginTransaction();
-        session.save(object);
+        session.saveOrUpdate(object);
         transaction.commit();
         session.close();
     }

@@ -5,13 +5,10 @@ import twitter4j.conf.ConfigurationBuilder;
  */
 class TwitterStreamReceiver {
     private String keyword = "";
-    private DatabaseWriter databaseWriter;
     private TwitterStream twitterStream;
     private MyStatusListener listener;
-    TwitterStreamReceiver(DatabaseWriter databaseWriter, String keyword) {
+    TwitterStreamReceiver(String keyword) {
         ConfigurationBuilder cb = new ConfigurationBuilder();
-
-        this.databaseWriter = databaseWriter;
         this.twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
         listener = new MyStatusListener(this, keyword);
         this.twitterStream.addListener(listener);
@@ -33,7 +30,7 @@ class TwitterStreamReceiver {
         } else {
             listener.setTWEET_COUNT(listener.getTWEET_COUNT() + 1);
         }
-        databaseWriter.writeTweet(new StatusPOJO(status, keyword));
+        DatabaseWriter.writeTweet(new StatusPOJO(status, keyword));
     }
 
 
