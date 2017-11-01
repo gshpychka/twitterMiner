@@ -43,11 +43,16 @@ class AverageDataPoint {
         return dataPoint;
     }
 
+    public AverageDataPoint() {
+
+    }
+
     AverageDataPoint(Timeframe timeframe, BigDecimal dataPoint, String keyword) {
         this.timeframe = timeframe;
         this.dataPoint = dataPoint;
         this.keyword = keyword;
         this.startTime = timeframe.getStartTime();
         this.period = timeframe.getPeriod();
+
     }
 }

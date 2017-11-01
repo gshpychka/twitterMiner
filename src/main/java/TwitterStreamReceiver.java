@@ -4,7 +4,7 @@ import twitter4j.conf.ConfigurationBuilder;
  *  Receives and processes the twitter stream
  */
 class TwitterStreamReceiver {
-    private String keyword = "";
+    private String keyword;
     private TwitterStream twitterStream;
     private MyStatusListener listener;
     TwitterStreamReceiver(String keyword) {

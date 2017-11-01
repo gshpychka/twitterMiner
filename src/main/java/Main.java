@@ -5,6 +5,8 @@ import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
 import twitter4j.*;
+import twitter4j.conf.ConfigurationBuilder;
+
 import java.io.IOException;
 
 /**
@@ -12,13 +14,14 @@ import java.io.IOException;
  * The main class.
  */
 public class Main {
-    static TelegramBot bot;
-    private static Logger logger = LogManager.getLogger();
-    public static void main (String[] args) throws TwitterException, IOException {
-        new TwitterStreamReceiver("Trump");
-        logger.error("Oh no");
-        new TwitterStreamReceiver( "Bannon");
 
+    static TelegramBot bot;
+    static Logger logger = LogManager.getLogger();
+    public static void main (String[] args) throws TwitterException, IOException {
+        //new TwitterStreamReceiver("Trump");
+        AverageCalculator averageCalculator = new AverageCalculator("impeach");
+        averageCalculator.populateDataPoints(60);
+        //averageCalculator.correctCorruptTimestamps();
         //ApiContextInitializer.init();
 //        TelegramBotsApi botsApi = new TelegramBotsApi();
 //        bot = new TelegramBot();

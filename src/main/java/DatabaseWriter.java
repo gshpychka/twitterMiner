@@ -30,4 +30,12 @@ class DatabaseWriter {
         transaction.commit();
         session.close();
     }
+
+    static void delete(Object object) {
+        Session session = sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        session.delete(object);
+        transaction.commit();
+        session.close();
+    }
 }
