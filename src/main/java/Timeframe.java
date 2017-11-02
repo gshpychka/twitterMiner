@@ -9,6 +9,7 @@ public class Timeframe {
     }
 
     Timeframe(long startTime, int period) {
+
         this(startTime,startTime+period);
     }
 
@@ -18,21 +19,24 @@ public class Timeframe {
 
     void setStartTime(long startTime) {
         this.startTime = startTime;
+        this.endTime = startTime + this.period;
     }
 
     long getEndTime() {
-        return endTime;
+        return this.endTime;
     }
 
     void setEndTime(long endTime) {
         this.endTime = endTime;
+        this.startTime = endTime - this.period;
     }
 
     int getPeriod() {
-        return period;
+        return this.period;
     }
 
     void setPeriod(int period) {
         this.period = period;
+        this.endTime = this.startTime + period;
     }
 }

@@ -8,23 +8,20 @@ import twitter4j.conf.ConfigurationBuilder;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.Date;
 
 
 public class AverageCalculator {
-    private StatelessSession session = HibernateSessionFactory.factory.openStatelessSession();
     private Logger logger;
     private String keyword;
 
     public AverageCalculator(String keyword) {
         this.keyword = keyword;
-        this.session = HibernateSessionFactory.factory.openStatelessSession();
+        //this.session = HibernateSessionFactory.factory.openStatelessSession();
         this.logger = LogManager.getLogger();
     }
 
-    protected void finalize() {
-        session.close();
-    }
     void correctCorruptTimestamps() {
         Session session = HibernateSessionFactory.factory.openSession();
         Transaction tx = session.beginTransaction();
@@ -62,135 +59,53 @@ public class AverageCalculator {
         session.close();
     }
 
-    BigDecimal calculateAverage(ScrollableResults results, String keyword) {
-        logger.trace("Entering calculateAverage()");
+    public void populateDataPoints(int period) {
         int precision = 4;
-        int data=0;
-        StatusPOJO statusPOJO;
-        int counter=0;
-
-        while (results.next()) {
-            logger.debug("calculateAverage() has a next result");
-            statusPOJO = (StatusPOJO) results.get(0);
-            if(statusPOJO.getText().contains(keyword)){
-                data+=100;
-                logger.debug("Tweet contains the keyword \"" + keyword + "\"");
-            }
-            counter++;
-        }
-        if (counter == 0) {
-            counter = 1;
-            logger.warn("Counter was zero. This means no tweets for the period. Should not happen");
-        }
-        logger.trace("Exiting calculateAverage()");
-        results.close();
-        return new BigDecimal(data,new MathContext(precision)).divide(new BigDecimal(counter),BigDecimal.ROUND_HALF_UP);
-    }
-
-    AverageDataPoint calculateDataPoint(Timeframe timeFrame, String keyword) {
-        logger.trace("Inside of calculateDataPoint(). The timeframe is " + timeFrame.getStartTime() + " to " + timeFrame.getEndTime() + ", the keyword is " + keyword);
-        ScrollableResults tweets = getTweetsForPeriod(timeFrame);
-        AverageDataPoint returnValue = new AverageDataPoint(timeFrame, calculateAverage(tweets,keyword),keyword);
-        session.getTransaction().commit();
-        tweets.close();
-        logger.trace("Transaction committed");
-        return returnValue;
-    }
-
-    ScrollableResults getTweetsForPeriod(Timeframe timeframe) {
-        logger.trace("Entering getTweetsForPeriod(). The timeframe is: " + timeframe.getStartTime() + " to " + timeframe.getEndTime());
-        session.beginTransaction();
-        logger.trace("Transaction begun");
-        ScrollableResults results = session.createQuery("SELECT S FROM StatusPOJO S WHERE timestamp >= :startTime AND timestamp < :endTime")
-                .setParameter("startTime", timeframe.getStartTime())
-                .setParameter("endTime", timeframe.getEndTime())
-                .setFetchSize(10)
+        Session session = HibernateSessionFactory.factory.openSession();
+        logger.trace("Here we go");
+        ScrollableResults allTweets = session.createQuery("SELECT S FROM StatusPOJO S ORDER BY timestamp ASC")
+                .setFetchSize(100)
                 .setReadOnly(true)
                 .scroll(ScrollMode.FORWARD_ONLY);
-        logger.trace("Got the results, returning");
-        return results;
-    }
-
-    void populateDataPoints(int period) {
-        logger.trace("Entering populateDataPoints()");
-
-        long startTime;
-        Transaction tx;
-
-        //Session session = HibernateSessionFactory.factory.openSession();
-        ScrollableResults datapointResults = session.createQuery("SELECT S FROM AverageDataPoint S WHERE period != :period")
-                .setParameter("period", period)
-                .setFetchSize(10)
-                .scroll(ScrollMode.FORWARD_ONLY);
-        tx = session.beginTransaction();
-        logger.trace("Transaction begun");
-        logger.trace("Got the initial test results, checking if there are any datapoints with a wrong period");
-        while (datapointResults.next()) {
-            AverageDataPoint dataPoint = (AverageDataPoint)datapointResults.get(0);
-            session.delete(dataPoint);
-            logger.trace("Deleting a datapoint with a start time of " + dataPoint.getStartTime() + " and a period of" + dataPoint.getPeriod() + ", should be " + "period");
-        }
-
-        tx.commit();
-        logger.trace("Transaction committed");
-
-        datapointResults = session.createQuery("SELECT S FROM AverageDataPoint S ORDER BY startTime DESC")
-                .setFetchSize(1)
-                .setMaxResults(1)
-                .scroll(ScrollMode.FORWARD_ONLY);
-        tx = session.beginTransaction();
-        logger.trace("Transaction begun");
-        logger.trace("All the records in the table, if any, should have correct periods.");
-        if (datapointResults.next()) {
-            AverageDataPoint averageDataPoint = (AverageDataPoint) datapointResults.get(0);
-            startTime = averageDataPoint.getStartTime();
-            logger.debug("The latest startTime in the table is " + startTime);
-        } else {
-            //startTime = getFirstTweetEver().getTimestamp();
-            startTime = 1486166400;
-            logger.debug("No records in the table, set the startTime to the very first value of " + startTime);
-        }
-        tx.commit();
-        logger.trace("Transaction committed");
-        //session.close();
-
-        long currentTime = new Date().getTime()/1000;
-        while (startTime < currentTime) {
-            logger.debug("About to calculate and record a data point with the startTime of "+ startTime + ", current time is " + currentTime +", difference is " + (currentTime-startTime));
-            DatabaseWriter.persist(calculateDataPoint(new Timeframe(startTime,period), keyword));
-            startTime+=period;
-        }
-        logger.trace("Exiting populateDataPoints()");
-    }
-
-    StatusPOJO getFirstTweetEver() {
-        StatelessSession session = HibernateSessionFactory.factory.openStatelessSession();
-        logger.trace("Entering getFirstTweetEver()");
         Transaction tx = session.beginTransaction();
-        ScrollableResults results =
-                session.createQuery("SELECT S FROM StatusPOJO S ORDER BY timestamp ASC")
-                .setFirstResult(0)
-                .setMaxResults(1)
-                .setFetchSize(0)
-                .setReadOnly(true)
-                .scroll(ScrollMode.FORWARD_ONLY);
-        logger.trace("Got the results");
+        MathContext mathContext = new MathContext(precision);
+        long startTime = 1486166400;
+        int data=0;
+        int counter=0;
+        StatusPOJO currentTweet;
+        logger.trace("About to enter the loop, startTime="+startTime);
+        BigDecimal datapoint;
+        Timeframe timeframe = new Timeframe(startTime, period);
+        while (allTweets.next()) {
+            logger.trace("Inside the loop");
+            currentTweet = (StatusPOJO) allTweets.get(0);
+            if (currentTweet.getTimestamp() < (startTime + period)) {
+                logger.trace("Tweet is from the current minute");
+                if (currentTweet.getText().contains(keyword)) {
+                    data+=100;
+                    logger.trace("Tweet contains keyword, data="+data);
+                }
+                counter++;
+                logger.trace("Counter incremented, value is "+counter);
+            } else {
+                logger.trace("Minute finished");
 
-
-        if (results.next()) {
-            StatusPOJO statusPOJO = (StatusPOJO) results.get(0);
-            tx.commit();
-            logger.trace("Committed the transaction");
-            results.close();
-            session.close();
-            return statusPOJO;
-        } else {
-            tx.commit();
-            logger.trace("Committed the transaction");
-            results.close();
-            session.close();
-            throw new HibernateException("No tweets in the database");
-        }
+                logger.trace("Saving datapoint, "+ data + "/" + counter);
+                if(counter==0){
+                    counter=1;
+                    logger.debug("Counter was zero, setting to 1");
+                }
+                datapoint =  BigDecimal.valueOf(data).divide(BigDecimal.valueOf(counter),2,RoundingMode.HALF_UP);
+                timeframe.setStartTime(startTime);
+                logger.debug("The datapoint is " + datapoint);
+                DatabaseWriter.persist(new AverageDataPoint(timeframe,datapoint,keyword));
+                startTime+=period;
+                data = 0;
+                counter = 0;
+                logger.trace("Next startTime is "+startTime);
+                }
+            }
+        tx.commit();
+        session.close();
     }
-
 }
