@@ -1,13 +1,10 @@
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.telegram.telegrambots.ApiContextInitializer;
-import org.telegram.telegrambots.TelegramBotsApi;
-import org.telegram.telegrambots.exceptions.TelegramApiRequestException;
-import twitter4j.*;
-import twitter4j.conf.ConfigurationBuilder;
-
-import java.io.IOException;
+import org.eclipse.jetty.servlet.ServletHolder;
+//import telegramBot.TelegramBot;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import webserver.MyGetServlet;
 
 /**
  * Created by glebu on 01-Feb-17.
@@ -15,21 +12,31 @@ import java.io.IOException;
  */
 public class Main {
 
-    static TelegramBot bot;
-    static Logger logger = LogManager.getLogger();
-    public static void main (String[] args) throws TwitterException, IOException {
-        //new TwitterStreamReceiver("Trump");
-        AverageCalculator averageCalculator = new AverageCalculator("impeach");
-        averageCalculator.populateDataPoints(60);
-        //averageCalculator.correctCorruptTimestamps();
-        //ApiContextInitializer.init();
-//        TelegramBotsApi botsApi = new TelegramBotsApi();
-//        bot = new TelegramBot();
-//        try {
-//            botsApi.registerBot(bot);
-//        } catch (TelegramApiRequestException e) {
-//            e.printStackTrace();
-//        }
-        //new Thread(new KeywordAnalyzer("impeach")).start();
-    }
+
+  static Logger logger = LogManager.getLogger();
+
+  public static void main(String[] args) throws Exception{
+    //new TwitterStreamReceiver("Trump");
+    AverageCalculator averageCalculator = new AverageCalculator("impeach");
+    MyGetServlet getServlet = new MyGetServlet();
+    ServletContextHandler context = new ServletContextHandler(1);
+    context.addServlet(new ServletHolder(getServlet), "/*");
+
+    Server server = new Server(8080);
+    server.setHandler(context);
+    server.start();
+    server.join();
+
+    //averageCalculator.populateDataPoints(60);
+    //averageCalculator.correctCorruptTimestamps();
+    //ApiContextInitializer.init();
+    //        TelegramBotsApi botsApi = new TelegramBotsApi();
+    //        bot = new telegramBot.TelegramBot();
+    //        try {
+    //            botsApi.registerBot(bot);
+    //        } catch (TelegramApiRequestException e) {
+    //            e.printStackTrace();
+    //        }
+    //new Thread(new KeywordAnalyzer("impeach")).start();
+  }
 }

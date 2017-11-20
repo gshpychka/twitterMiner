@@ -39,6 +39,12 @@ class AverageDataPoint {
         return startTime;
     }
 
+    void setTimeframe(Timeframe timeframe) {
+        this.timeframe = timeframe;
+        this.startTime = timeframe.getStartTime();
+        this.period = timeframe.getPeriod();
+    }
+
     BigDecimal getDataPoint() {
         return dataPoint;
     }

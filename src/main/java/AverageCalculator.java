@@ -61,50 +61,58 @@ public class AverageCalculator {
 
     public void populateDataPoints(int period) {
         int precision = 4;
-        Session session = HibernateSessionFactory.factory.openSession();
+        StatelessSession session = HibernateSessionFactory.factory.openStatelessSession();
         logger.trace("Here we go");
         ScrollableResults allTweets = session.createQuery("SELECT S FROM StatusPOJO S ORDER BY timestamp ASC")
                 .setFetchSize(100)
                 .setReadOnly(true)
                 .scroll(ScrollMode.FORWARD_ONLY);
         Transaction tx = session.beginTransaction();
-        MathContext mathContext = new MathContext(precision);
         long startTime = 1486166400;
         int data=0;
         int counter=0;
         StatusPOJO currentTweet;
         logger.trace("About to enter the loop, startTime="+startTime);
-        BigDecimal datapoint;
+        BigDecimal datapoint = new BigDecimal(0);
         Timeframe timeframe = new Timeframe(startTime, period);
+        AverageDataPoint averageDataPoint = new AverageDataPoint(timeframe,datapoint,keyword);
         while (allTweets.next()) {
+
             logger.trace("Inside the loop");
             currentTweet = (StatusPOJO) allTweets.get(0);
             if (currentTweet.getTimestamp() < (startTime + period)) {
                 logger.trace("Tweet is from the current minute");
                 if (currentTweet.getText().contains(keyword)) {
-                    data+=100;
-                    logger.trace("Tweet contains keyword, data="+data);
+                    data += 100;
+                    logger.debug("Tweet contains keyword, data=" + data);
                 }
                 counter++;
-                logger.trace("Counter incremented, value is "+counter);
+                logger.trace("Counter incremented, value is " + counter);
             } else {
                 logger.trace("Minute finished");
-
-                logger.trace("Saving datapoint, "+ data + "/" + counter);
-                if(counter==0){
-                    counter=1;
-                    logger.debug("Counter was zero, setting to 1");
+                logger.debug("Saving datapoint, " + data + "/" + counter);
+                if (counter != 0) {
+                    datapoint = BigDecimal.valueOf(data).divide(BigDecimal.valueOf(counter), 2, RoundingMode.HALF_UP);
+                    timeframe.setStartTime(startTime);
+                    averageDataPoint.setDataPoint(datapoint);
+                    averageDataPoint.setKeyword(keyword);
+                    averageDataPoint.setTimeframe(timeframe);
+                    logger.debug("The datapoint is " + datapoint);
+                    DatabaseWriter.persist(averageDataPoint);
+                    //session.flush();
+                } else {
+                    logger.debug("No tweets for this minute");
                 }
-                datapoint =  BigDecimal.valueOf(data).divide(BigDecimal.valueOf(counter),2,RoundingMode.HALF_UP);
-                timeframe.setStartTime(startTime);
-                logger.debug("The datapoint is " + datapoint);
-                DatabaseWriter.persist(new AverageDataPoint(timeframe,datapoint,keyword));
-                startTime+=period;
+
+                startTime += period;
                 data = 0;
                 counter = 0;
-                logger.trace("Next startTime is "+startTime);
-                }
+                logger.debug("Next startTime is " + startTime);
+
             }
+            // session.evict(currentTweet);
+            // session.clear();
+        }
         tx.commit();
         session.close();
     }

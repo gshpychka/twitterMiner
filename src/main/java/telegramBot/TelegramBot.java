@@ -1,7 +1,7 @@
-import org.telegram.telegrambots.api.methods.send.SendMessage;
+package telegramBot;
+
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

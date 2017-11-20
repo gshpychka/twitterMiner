@@ -1,3 +1,5 @@
+package telegramBot;
+
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
@@ -16,11 +18,11 @@ class TelegramBotThread implements Runnable {
             SendMessage message = new SendMessage()
                     .setChatId(update.getMessage().getChatId());
             //message.setText("In the last hour, "+KeywordAnalyzer.totalAverage+"% of tweets mention impeachment.");
-            try {
-                Main.bot.sendMessage(message);
-            } catch (TelegramApiException e) {
-                System.out.println(e.getMessage());
-            }
+//            try {
+//                Main.bot.sendMessage(message);
+//            } catch (TelegramApiException e) {
+//                System.out.println(e.getMessage());
+//            }
         }
     }
 }
