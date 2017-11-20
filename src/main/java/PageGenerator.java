@@ -1,4 +1,3 @@
-package webserver;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -13,19 +12,19 @@ import java.util.Map;
 /**
  * Created by gshpychka on 01.02.17.
  */
-public class PageGenerator {
+class PageGenerator {
   private static final String HTML_DIR = "templates";
 
   private static PageGenerator pageGenerator;
   private final Configuration cfg;
 
-  public static PageGenerator instance() {
+  static PageGenerator instance() {
     if (pageGenerator == null)
       pageGenerator = new PageGenerator();
     return pageGenerator;
   }
 
-  public String getPage(String filename, Map<String, Object> data) {
+  String getPage(String filename, Map<String, Object> data) {
     Writer stream = new StringWriter();
 
     try {

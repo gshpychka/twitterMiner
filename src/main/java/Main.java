@@ -4,7 +4,6 @@ import org.eclipse.jetty.servlet.ServletHolder;
 //import telegramBot.TelegramBot;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import webserver.MyGetServlet;
 
 /**
  * Created by glebu on 01-Feb-17.
@@ -17,7 +16,7 @@ public class Main {
 
   public static void main(String[] args) throws Exception{
     //new TwitterStreamReceiver("Trump");
-    AverageCalculator averageCalculator = new AverageCalculator("impeach");
+    //AverageCalculator averageCalculator = new AverageCalculator("impeach");
     MyGetServlet getServlet = new MyGetServlet();
     ServletContextHandler context = new ServletContextHandler(1);
     context.addServlet(new ServletHolder(getServlet), "/*");

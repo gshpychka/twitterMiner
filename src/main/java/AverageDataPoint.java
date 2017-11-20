@@ -3,7 +3,7 @@ import java.math.BigDecimal;
 /**
  * Created by glebu on 16-Feb-17.
  */
-class AverageDataPoint {
+public class AverageDataPoint {
     private Timeframe timeframe;
     private BigDecimal dataPoint;
     private String keyword;
@@ -18,23 +18,23 @@ class AverageDataPoint {
         this.period = period;
     }
 
-    String getKeyword() {
+    public String getKeyword() {
         return keyword;
     }
 
-    void setKeyword(String keyword) {
+    public void setKeyword(String keyword) {
         this.keyword = keyword;
     }
 
-    void setStartTime(long startTime) {
+    public void setStartTime(long startTime) {
         this.startTime = startTime;
     }
 
-    void setDataPoint(BigDecimal dataPoint) {
+    public void setDataPoint(BigDecimal dataPoint) {
         this.dataPoint = dataPoint;
     }
 
-    long getStartTime() {
+    public long getStartTime() {
 
         return startTime;
     }
@@ -45,7 +45,7 @@ class AverageDataPoint {
         this.period = timeframe.getPeriod();
     }
 
-    BigDecimal getDataPoint() {
+    public BigDecimal getDataPoint() {
         return dataPoint;
     }
 

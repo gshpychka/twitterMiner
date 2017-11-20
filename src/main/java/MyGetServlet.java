@@ -1,4 +1,3 @@
-package webserver;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -8,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MyGetServlet extends HttpServlet {
+  private String chartData;
   public void doPost(HttpServletRequest request, HttpServletResponse response) {
     return;
   }
@@ -16,11 +16,16 @@ public class MyGetServlet extends HttpServlet {
     response.getWriter().println(PageGenerator.instance().getPage("chart.html", createPageVariablesMap(request)));
   }
 
-  private static Map<String, Object> createPageVariablesMap(HttpServletRequest request) {
+  private Map<String, Object> createPageVariablesMap(HttpServletRequest request) {
     Map<String, Object> pageVariables = new HashMap<>();
-
-    pageVariables.put("start", request.getParameter("start"));
-    pageVariables.put("finish", request.getParameter("finish"));
+    pageVariables.put("chartData", chartData);
     return pageVariables;
+  }
+
+  MyGetServlet() {
+    super();
+    long start;
+    long finish;
+    this.chartData = ChartDataProvider.getChartData(1498780800, Long.MAX_VALUE);
   }
 }

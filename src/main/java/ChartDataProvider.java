@@ -1,12 +1,14 @@
+
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+
 
 public class ChartDataProvider {
   public static void main(String[] args) {
@@ -52,5 +54,27 @@ public class ChartDataProvider {
 
   }
 
+
+  static String getChartData(long start, long finish) {
+    Session session = HibernateSessionFactory.factory.openSession();
+    Transaction tx = session.beginTransaction();
+    String chartData = "";
+    ScrollableResults results = session
+        .createQuery("SELECT D FROM AverageDataPoint D WHERE period = 60*60*12 AND startTime > :start AND startTime < :finish ORDER BY startTime ASC")
+        .setParameter("start", start)
+        .setParameter("finish", finish)
+        .setFetchSize(10)
+        .scroll(ScrollMode.FORWARD_ONLY);
+    AverageDataPoint averageDataPoint;
+    int i = 0;
+    while (results.next()) {
+      averageDataPoint = (AverageDataPoint) results.get(0);
+      chartData = chartData.concat("[new Date(" + averageDataPoint.getStartTime()*1000 + "), " + averageDataPoint.getDataPoint() + "],");
+      i++;
+    }
+    chartData = chartData.substring(0, chartData.length() - 1);
+    return chartData;
+
+  }
 
 }
