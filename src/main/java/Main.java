@@ -15,7 +15,9 @@ public class Main {
   static Logger logger = LogManager.getLogger();
 
   public static void main(String[] args) throws Exception{
-    //new TwitterStreamReceiver("Trump");
+
+    new TwitterStreamReceiver("Trump");
+    logger.trace("Receiver created");
 
     MyGetServlet getServlet = new MyGetServlet();
     ServletContextHandler context = new ServletContextHandler(1);
@@ -24,9 +26,10 @@ public class Main {
     Server server = new Server(8080);
     server.setHandler(context);
     server.start();
+    logger.trace("server started");
 
-    AverageCalculator averageCalculator = new AverageCalculator("impeach");
-    averageCalculator.populateDataPoints(60);
+    //AverageCalculator averageCalculator = new AverageCalculator("impeach");
+    //averageCalculator.populateDataPoints(60);
     //averageCalculator.correctCorruptTimestamps();
     //ApiContextInitializer.init();
     //        TelegramBotsApi botsApi = new TelegramBotsApi();

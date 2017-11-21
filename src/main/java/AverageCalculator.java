@@ -64,10 +64,13 @@ public class AverageCalculator {
 
     StatelessSession session = HibernateSessionFactory.factory.openStatelessSession();
     logger.trace("Here we go");
-    ScrollableResults allTweets = session.createQuery("SELECT S FROM StatusPOJO S ORDER BY timestamp ASC").setFetchSize(100).setReadOnly(true).scroll(ScrollMode.FORWARD_ONLY);
-    Transaction tx = session.beginTransaction();
-
     long startTime = getLatestTime(period);
+    ScrollableResults allTweets = session.createQuery("SELECT S FROM StatusPOJO S WHERE timestamp >= :startTime ORDER BY timestamp ASC")
+        .setParameter("startTime",startTime)
+        .setFetchSize(100)
+        .setReadOnly(true)
+        .scroll(ScrollMode.FORWARD_ONLY);
+    Transaction tx = session.beginTransaction();
 
     int data = 0;
     int counter = 0;
@@ -94,7 +97,7 @@ public class AverageCalculator {
       } else {
         logger.trace("Minute finished");
         logger.debug("Saving datapoint, " + data + "/" + counter);
-        if (counter != 0) {
+        if (counter > 100) {
           datapoint = BigDecimal.valueOf(data).divide(BigDecimal.valueOf(counter), precision, RoundingMode.HALF_UP);
           timeframe.setStartTime(startTime);
           averageDataPoint.setDataPoint(datapoint);
@@ -104,7 +107,7 @@ public class AverageCalculator {
           DatabaseWriter.persist(averageDataPoint);
           //session.flush();
         } else {
-          logger.debug("No tweets for this minute");
+          logger.debug("Less than 100 tweets for this minute");
         }
 
         startTime += period;
@@ -118,18 +121,18 @@ public class AverageCalculator {
     }
     tx.commit();
     session.close();
+    ChartDataProvider.populateChartData();
   }
 
-  private long getLatestTime(int period) {
+  long getLatestTime(int period) {
     StatelessSession session = HibernateSessionFactory.factory.openStatelessSession();
     ScrollableResults results = session.createQuery("SELECT D FROM AverageDataPoint D WHERE period = :period AND keyword = :keyword ORDER BY startTime DESC").setParameter("period", period).setParameter("keyword", this.keyword).setFetchSize(1).setMaxResults(1).setReadOnly(true).scroll(ScrollMode.FORWARD_ONLY);
-    if (results.next() && results.get(0) == null) {
-      session.close();
-      return beginningTime;
-    } else {
+    if (results.next() && results.get(0) != null) {
       AverageDataPoint dataPoint = (AverageDataPoint) results.get(0);
       session.close();
       return dataPoint.getStartTime();
+    } else {
+      return beginningTime;
     }
   }
 

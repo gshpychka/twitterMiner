@@ -42,7 +42,11 @@ class UserPOJO {
     }
     UserPOJO(){}
     UserPOJO(User user) {
-        this.handle = user.getName();
+        if (user.getName().length() >= 45) {
+            this.handle = user.getName().substring(0, 44);
+        } else {
+            this.handle = user.getName();
+        }
         this.name = user.getScreenName();
         this.userID = user.getId();
         this.followers = user.getFollowersCount();
