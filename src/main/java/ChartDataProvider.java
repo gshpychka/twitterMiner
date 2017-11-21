@@ -57,7 +57,6 @@ public class ChartDataProvider {
 
   static String getChartData(long start, long finish) {
     Session session = HibernateSessionFactory.factory.openSession();
-    Transaction tx = session.beginTransaction();
     String chartData = "";
     ScrollableResults results = session
         .createQuery("SELECT D FROM AverageDataPoint D WHERE period = 60*60*12 AND startTime > :start AND startTime < :finish ORDER BY startTime ASC")
@@ -66,11 +65,13 @@ public class ChartDataProvider {
         .setFetchSize(10)
         .scroll(ScrollMode.FORWARD_ONLY);
     AverageDataPoint averageDataPoint;
-    int i = 0;
+    NewsStories newsStories = new NewsStories();
     while (results.next()) {
       averageDataPoint = (AverageDataPoint) results.get(0);
-      chartData = chartData.concat("[new Date(" + averageDataPoint.getStartTime()*1000 + "), " + averageDataPoint.getDataPoint() + "],");
-      i++;
+      chartData = chartData.concat("[new Date("
+          + averageDataPoint.getStartTime()*1000 + "), "
+          + averageDataPoint.getDataPoint() + ", "
+          + newsStories.getStory(averageDataPoint.getStartTime())+"],");
     }
     chartData = chartData.substring(0, chartData.length() - 1);
     return chartData;

@@ -16,7 +16,7 @@ public class Main {
 
   public static void main(String[] args) throws Exception{
     //new TwitterStreamReceiver("Trump");
-    //AverageCalculator averageCalculator = new AverageCalculator("impeach");
+
     MyGetServlet getServlet = new MyGetServlet();
     ServletContextHandler context = new ServletContextHandler(1);
     context.addServlet(new ServletHolder(getServlet), "/*");
@@ -24,9 +24,9 @@ public class Main {
     Server server = new Server(8080);
     server.setHandler(context);
     server.start();
-    server.join();
 
-    //averageCalculator.populateDataPoints(60);
+    AverageCalculator averageCalculator = new AverageCalculator("impeach");
+    averageCalculator.populateDataPoints(60);
     //averageCalculator.correctCorruptTimestamps();
     //ApiContextInitializer.init();
     //        TelegramBotsApi botsApi = new TelegramBotsApi();

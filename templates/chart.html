@@ -12,16 +12,31 @@
             var data = new google.visualization.DataTable();
             data.addColumn('date', 'Date');
             data.addColumn('number', 'Tweets that mention impeachment');
+            data.addColumn({type: 'string', role: 'annotation'});
 
-            data.addRows([${chartData}]);
-
+            data.addRows([${chartData}] );
             var options = {
+
                 curveType: 'function',
                 vAxis: {
                     title: 'Fraction (%)'
                 },
-                legend: { position: 'bottom'}
-
+                legend: { position: 'bottom'},
+                trendlines: {
+                    0: {
+                        type: 'exponential',
+                        color: 'green',
+                        lineWidth: 1,
+                        opacity: 0.3,
+                        showR2: false,
+                        visibleInLegend: false
+                    }
+                },
+                animation: {
+                    duration: 1000,
+                    startup: true,
+                    easing: 'out'
+                }
             };
 
             var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
