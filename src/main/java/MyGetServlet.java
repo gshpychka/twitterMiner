@@ -19,12 +19,12 @@ public class MyGetServlet extends HttpServlet {
 
   private Map<String, Object> createPageVariablesMap() {
     Map<String, Object> pageVariables = new HashMap<>();
-    pageVariables.put("chartData", this.chartDataProvider.getChartData(1498780800, Long.MAX_VALUE));
+    pageVariables.put("chartData", this.chartDataProvider.getChartData());
     return pageVariables;
   }
 
   MyGetServlet() {
     super();
-    this.chartDataProvider = new ChartDataProvider("impeach");
+    this.chartDataProvider = new ChartDataProvider("impeach", 1498780800, Long.MAX_VALUE);
   }
 }

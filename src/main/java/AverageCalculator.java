@@ -121,7 +121,7 @@ public class AverageCalculator {
     }
     tx.commit();
     session.close();
-    ChartDataProvider.populateChartData();
+    //ChartDataProvider.populateChartData();
   }
 
   long getLatestTime(int period) {
@@ -130,6 +130,7 @@ public class AverageCalculator {
     if (results.next() && results.get(0) != null) {
       AverageDataPoint dataPoint = (AverageDataPoint) results.get(0);
       session.close();
+
       return dataPoint.getStartTime();
     } else {
       return beginningTime;
