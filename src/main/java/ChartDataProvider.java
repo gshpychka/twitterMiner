@@ -92,7 +92,7 @@ class ChartDataProvider {
 
     long latestData = averageCalculator.getLatestTime(60 * 60 * hours);
 
-    if ((new Date().getTime()/1000 - latestData) > (60 * 60 * hours) * 2) {
+    if ((new Date().getTime()/1000 - latestData) > (60 * 60 * hours)) {
       populateChartData();
       chartData = computeChartData();
     }

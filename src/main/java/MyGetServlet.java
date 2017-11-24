@@ -25,6 +25,6 @@ public class MyGetServlet extends HttpServlet {
 
   MyGetServlet() {
     super();
-    this.chartDataProvider = new ChartDataProvider("impeach", 1498780800, Long.MAX_VALUE);
+    this.chartDataProvider = new ChartDataProvider("impeach", 1488404001, Long.MAX_VALUE);
   }
 }

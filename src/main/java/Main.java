@@ -16,7 +16,7 @@ public class Main {
 
   public static void main(String[] args) throws Exception{
 
-    new TwitterStreamReceiver("Trump");
+    //new TwitterStreamReceiver("Trump");
     logger.trace("Receiver created");
 
     MyGetServlet getServlet = new MyGetServlet();
